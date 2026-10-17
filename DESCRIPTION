@@ -14,3 +14,5 @@ Suggests:
 Config/testthat/edition: 3
 Imports: 
     shiny
+URL: https://github.com/TaggTechRnD/AdamsAnalysis
+BugReports: https://github.com/TaggTechRnD/AdamsAnalysis/issues
