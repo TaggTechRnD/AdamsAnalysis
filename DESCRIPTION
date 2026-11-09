@@ -16,3 +16,6 @@ Imports:
     shiny
 URL: https://github.com/TaggTechRnD/AdamsAnalysis
 BugReports: https://github.com/TaggTechRnD/AdamsAnalysis/issues
+Depends: 
+    R (>= 3.5)
+LazyData: true
