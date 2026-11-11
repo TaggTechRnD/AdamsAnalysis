@@ -1,74 +1,74 @@
-method_id,method_name,objective,outcome_type,predictor_type,predictor_count,group_count,timepoints,observation_structure,study_design
-AA01,Mean and Standard Deviation,describe,continuous,none,zero,any,any,any,any
-AA02,Median and Interquartile Range,describe,continuous|ordinal,none,zero,any,any,any,any
-AA03,Frequencies and Proportions,describe,binary|nominal|ordinal,none,zero,any,any,any,any
-AA04,Pearson Correlation,associate,continuous,continuous,one,any,any,independent,any
-AA05,Spearman Correlation,associate,continuous|ordinal,continuous|ordinal,one,any,any,independent,any
-AA06,Independent Samples t-Test,compare,continuous,categorical,one,two,one,independent,any
-AA07,Welch's t-Test,compare,continuous,categorical,one,two,one,independent,any
-AA08,Paired t-Test,compare,continuous,categorical,one,one|two,one|two,paired,any
-AA09,Mann-Whitney U Test,compare,continuous|ordinal,categorical,one,two,one,independent,any
-AA10,Wilcoxon Signed-Rank Test,compare,continuous|ordinal,categorical,one,one|two,one|two,paired,any
-AA11,One-Way ANOVA,compare,continuous,categorical,one,two_plus,one,independent,any
-AA12,Two-Way ANOVA,compare,continuous,categorical,two_plus,two_plus,one,independent,any
-AA13,Repeated-Measures ANOVA,compare,continuous,categorical,one,one,two|three_plus,repeated,any
-AA14,Mixed-Design ANOVA,compare,continuous,categorical,two_plus,two_plus,two|three_plus,repeated,any
-AA15,ANCOVA,compare,continuous,continuous|categorical|mixed,two_plus,two_plus,one,independent,any
-AA16,Kruskal-Wallis Test,compare,continuous|ordinal,categorical,one,two_plus,one,independent,any
-AA17,Friedman Test,compare,continuous|ordinal,categorical,one,one,two|three_plus,repeated,any
-AA18,Chi-Square Test of Independence,associate,binary|nominal|ordinal,categorical,one,any,one,independent,any
-AA19,Fisher's Exact Test,associate,binary|nominal|ordinal,categorical,one,any,one,independent,any
-AA20,Simple Linear Regression,associate|predict,continuous,continuous|categorical,one,any,one,independent,any
-AA21,Multiple Linear Regression,associate|predict,continuous,continuous|categorical|mixed,two_plus,any,one,independent,any
-AA22,Binary Logistic Regression,associate|predict,binary,continuous|categorical|mixed,one_plus,any,one,independent,any
-AA23,Poisson Regression,associate|predict,count,continuous|categorical|mixed,one_plus,any,one,independent,any
-AA24,Linear Mixed-Effects Model,associate|predict,continuous,continuous|categorical|mixed,one_plus,any,any,repeated|clustered,any
-AA25,Generalized Linear Mixed Model (GLMM),associate|predict,continuous|binary|count|ordinal|proportion,continuous|categorical|mixed,one_plus,any,any,repeated|clustered,any
-AA26,Principal Component Analysis (PCA),reduce_dimensions,none,continuous,any,any,any,independent,any
-AA27,Exploratory Factor Analysis (EFA),reduce_dimensions,none,continuous|ordinal,any,any,any,independent,any
-AA28,Decision Tree,predict,continuous|binary|nominal|ordinal,continuous|categorical|mixed,one_plus,any,any,independent,any
-AA29,Random Forest,predict,continuous|binary|nominal|ordinal,continuous|categorical|mixed,one_plus,any,any,independent,any
-AA30,Difference-in-Differences (DiD),causal_effect|compare,continuous|binary|count,continuous|categorical|mixed,two_plus,two_plus,two|three_plus,independent|repeated,observational|quasi_experimental
-AA31,Cross-Tabulation,describe|associate,binary|nominal|ordinal,categorical,one,any,one,independent,any
-AA32,Confidence Intervals,estimate_uncertainty,any,any,any,any,any,any,any
-AA33,Kendall's Tau,associate,continuous|ordinal,continuous|ordinal,one,any,any,independent,any
-AA34,Point-Biserial Correlation,associate,continuous,binary,one,any,one,independent,any
-AA35,Partial Correlation,associate,continuous,continuous,two_plus,any,one,independent,any
-AA36,One-Sample t-Test,compare,continuous,none,zero,one,one,independent,any
-AA37,Welch's ANOVA,compare,continuous,categorical,one,two_plus,one,independent,any
-AA38,MANOVA,compare,multivariate_continuous,categorical,one_plus,two_plus,one,independent,any
-AA39,McNemar's Test,compare,binary,categorical,one,one|two,one|two,paired,any
-AA40,Polynomial Regression,associate|predict,continuous,continuous|mixed,one_plus,any,one,independent,any
-AA41,Generalized Additive Model (GAM),associate|predict,continuous|binary|count|proportion,continuous|mixed,one_plus,any,any,independent|time_series|repeated,any
-AA42,Multinomial Logistic Regression,associate|predict,nominal,continuous|categorical|mixed,one_plus,any,one,independent,any
-AA43,Ordinal Logistic Regression,associate|predict,ordinal,continuous|categorical|mixed,one_plus,any,one,independent,any
-AA44,Negative Binomial Regression,associate|predict,count,continuous|categorical|mixed,one_plus,any,one,independent,any
-AA45,Zero-Inflated Regression,associate|predict,count,continuous|categorical|mixed,one_plus,any,one,independent,any
-AA46,Beta Regression,associate|predict,proportion,continuous|categorical|mixed,one_plus,any,one,independent,any
-AA47,Quantile Regression,associate|predict,continuous,continuous|categorical|mixed,one_plus,any,one,independent,any
-AA48,Generalized Estimating Equations (GEE),associate,continuous|binary|count|ordinal,continuous|categorical|mixed,one_plus,any,any,repeated|clustered,any
-AA49,Cox Proportional Hazards Regression,associate|predict,time_to_event,continuous|categorical|mixed,one_plus,any,any,independent|clustered,any
-AA50,Kaplan-Meier Analysis,describe|compare,time_to_event,none|categorical,zero|one,any,any,independent,any
-AA51,Log-Rank Test,compare,time_to_event,categorical,one,two_plus,any,independent,any
-AA52,Confirmatory Factor Analysis (CFA),validate_measurement,none,continuous|ordinal,any,any,any,independent,any
-AA53,Path Analysis,model_paths,continuous|binary|ordinal|count,continuous|categorical|mixed,two_plus,any,any,independent|repeated,any
-AA54,Structural Equation Modeling (SEM),model_paths|validate_measurement,continuous|binary|ordinal|count,continuous|categorical|mixed,one_plus,any,any,independent|repeated,any
-AA55,Mediation Analysis,model_paths|causal_effect,continuous|binary|ordinal|count,continuous|categorical|mixed,two_plus,any,any,independent|repeated,any
-AA56,Latent Growth Curve Modeling,model_paths,continuous|ordinal,continuous|categorical|mixed,any,any,three_plus,repeated,longitudinal
-AA57,ARIMA,forecast,continuous,none|continuous,zero|one_plus,one,three_plus,time_series,time_series
-AA58,Exponential Smoothing (ETS),forecast,continuous,none,zero,one,three_plus,time_series,time_series
-AA59,Interrupted Time Series,causal_effect|compare,continuous|binary|count,continuous|categorical|mixed,one_plus,one|two_plus,three_plus,time_series,time_series|quasi_experimental
-AA60,Propensity Score Methods,causal_effect,any,continuous|categorical|mixed,one_plus,two,any,independent|repeated,observational|quasi_experimental
-AA61,Gradient Boosting,predict,continuous|binary|nominal|count,continuous|categorical|mixed,one_plus,any,any,independent,any
-AA62,Ridge Regression,predict|associate,continuous|binary|count,continuous|categorical|mixed,one_plus,any,one,independent,any
-AA63,LASSO Regression,predict|associate,continuous|binary|count,continuous|categorical|mixed,one_plus,any,one,independent,any
-AA64,Elastic Net Regression,predict|associate,continuous|binary|count,continuous|categorical|mixed,one_plus,any,one,independent,any
-AA65,Support Vector Machine (SVM),predict,continuous|binary|nominal,continuous|categorical|mixed,one_plus,any,any,independent,any
-AA66,k-Nearest Neighbors (kNN),predict,continuous|binary|nominal,continuous|categorical|mixed,one_plus,any,any,independent,any
-AA67,Naive Bayes,predict,binary|nominal,continuous|categorical|mixed,one_plus,any,any,independent,any
-AA68,Artificial Neural Network,predict,continuous|binary|nominal|count,continuous|categorical|mixed,one_plus,any,any,independent,any
-AA69,K-Means Clustering,cluster,none,continuous,any,any,any,independent,any
-AA70,Hierarchical Clustering,cluster,none,continuous|categorical|mixed,any,any,any,independent,any
-AA71,DBSCAN,cluster,none,continuous,any,any,any,independent,any
-AA72,Isolation Forest,detect_anomalies,none,continuous|categorical|mixed,any,any,any,independent,any
-AA73,Distributed Lag Non-Linear Model (DLNM),associate,continuous|binary|count,continuous|mixed,one_plus,any,three_plus,time_series|repeated,observational|time_series|longitudinal
+"method_id","method_name","objective","outcome_type","predictor_type","predictor_count","group_count","timepoints","observation_structure","study_design"
+"AA01","Mean and Standard Deviation","describe","continuous","none","zero","any","any","any","any"
+"AA02","Median and Interquartile Range","describe","continuous|ordinal","none","zero","any","any","any","any"
+"AA03","Frequencies and Proportions","describe","binary|nominal|ordinal","none","zero","any","any","any","any"
+"AA04","Pearson Correlation","associate","continuous","continuous","one","any","any","independent","any"
+"AA05","Spearman Correlation","associate","continuous|ordinal","continuous|ordinal","one","any","any","independent","any"
+"AA06","Independent Samples t-Test","compare","continuous","categorical","one","two","one","independent","any"
+"AA07","Welch's t-Test","compare","continuous","categorical","one","two","one","independent","any"
+"AA08","Paired t-Test","compare","continuous","categorical","one","one|two","one|two","paired","any"
+"AA09","Mann-Whitney U Test","compare","continuous|ordinal","categorical","one","two","one","independent","any"
+"AA10","Wilcoxon Signed-Rank Test","compare","continuous|ordinal","categorical","one","one|two","one|two","paired","any"
+"AA11","One-Way ANOVA","compare","continuous","categorical","one","two_plus","one","independent","any"
+"AA12","Two-Way ANOVA","compare","continuous","categorical","two_plus","two_plus","one","independent","any"
+"AA13","Repeated-Measures ANOVA","compare","continuous","categorical","one","one","two|three_plus","repeated","any"
+"AA14","Mixed-Design ANOVA","compare","continuous","categorical","two_plus","two_plus","two|three_plus","repeated","any"
+"AA15","ANCOVA","compare","continuous","continuous|categorical|mixed","two_plus","two_plus","one","independent","any"
+"AA16","Kruskal-Wallis Test","compare","continuous|ordinal","categorical","one","two_plus","one","independent","any"
+"AA17","Friedman Test","compare","continuous|ordinal","categorical","one","one","two|three_plus","repeated","any"
+"AA18","Chi-Square Test of Independence","associate","binary|nominal|ordinal","categorical","one","any","one","independent","any"
+"AA19","Fisher's Exact Test","associate","binary|nominal|ordinal","categorical","one","any","one","independent","any"
+"AA20","Simple Linear Regression","associate|predict","continuous","continuous|categorical","one","any","one","independent","any"
+"AA21","Multiple Linear Regression","associate|predict","continuous","continuous|categorical|mixed","two_plus","any","one","independent","any"
+"AA22","Binary Logistic Regression","associate|predict","binary","continuous|categorical|mixed","one_plus","any","one","independent","any"
+"AA23","Poisson Regression","associate|predict","count","continuous|categorical|mixed","one_plus","any","one","independent","any"
+"AA24","Linear Mixed-Effects Model","compare|associate|predict","continuous","continuous|categorical|mixed","one_plus","any","any","repeated|clustered","any"
+"AA25","Generalized Linear Mixed Model (GLMM)","associate|predict","continuous|binary|count|ordinal|proportion","continuous|categorical|mixed","one_plus","any","any","repeated|clustered","any"
+"AA26","Principal Component Analysis (PCA)","reduce_dimensions","none","continuous","any","any","any","independent","any"
+"AA27","Exploratory Factor Analysis (EFA)","reduce_dimensions","none","continuous|ordinal","any","any","any","independent","any"
+"AA28","Decision Tree","predict","continuous|binary|nominal|ordinal","continuous|categorical|mixed","one_plus","any","any","independent","any"
+"AA29","Random Forest","predict","continuous|binary|nominal|ordinal","continuous|categorical|mixed","one_plus","any","any","independent","any"
+"AA30","Difference-in-Differences (DiD)","causal_effect|compare","continuous|binary|count","continuous|categorical|mixed","two_plus","two_plus","two|three_plus","independent|repeated","observational|quasi_experimental"
+"AA31","Cross-Tabulation","describe|associate","binary|nominal|ordinal","categorical","one","any","one","independent","any"
+"AA32","Confidence Intervals","estimate_uncertainty","any","any","any","any","any","any","any"
+"AA33","Kendall's Tau","associate","continuous|ordinal","continuous|ordinal","one","any","any","independent","any"
+"AA34","Point-Biserial Correlation","associate","continuous","binary","one","any","one","independent","any"
+"AA35","Partial Correlation","associate","continuous","continuous","two_plus","any","one","independent","any"
+"AA36","One-Sample t-Test","compare","continuous","none","zero","one","one","independent","any"
+"AA37","Welch's ANOVA","compare","continuous","categorical","one","two_plus","one","independent","any"
+"AA38","MANOVA","compare","multivariate_continuous","categorical","one_plus","two_plus","one","independent","any"
+"AA39","McNemar's Test","compare","binary","categorical","one","one|two","one|two","paired","any"
+"AA40","Polynomial Regression","associate|predict","continuous","continuous|mixed","one_plus","any","one","independent","any"
+"AA41","Generalized Additive Model (GAM)","associate|predict","continuous|binary|count|proportion","continuous|mixed","one_plus","any","any","independent|time_series|repeated","any"
+"AA42","Multinomial Logistic Regression","associate|predict","nominal","continuous|categorical|mixed","one_plus","any","one","independent","any"
+"AA43","Ordinal Logistic Regression","associate|predict","ordinal","continuous|categorical|mixed","one_plus","any","one","independent","any"
+"AA44","Negative Binomial Regression","associate|predict","count","continuous|categorical|mixed","one_plus","any","one","independent","any"
+"AA45","Zero-Inflated Regression","associate|predict","count","continuous|categorical|mixed","one_plus","any","one","independent","any"
+"AA46","Beta Regression","associate|predict","proportion","continuous|categorical|mixed","one_plus","any","one","independent","any"
+"AA47","Quantile Regression","associate|predict","continuous","continuous|categorical|mixed","one_plus","any","one","independent","any"
+"AA48","Generalized Estimating Equations (GEE)","associate","continuous|binary|count|ordinal","continuous|categorical|mixed","one_plus","any","any","repeated|clustered","any"
+"AA49","Cox Proportional Hazards Regression","associate|predict","time_to_event","continuous|categorical|mixed","one_plus","any","any","independent|clustered","any"
+"AA50","Kaplan-Meier Analysis","describe|compare","time_to_event","none|categorical","zero|one","any","any","independent","any"
+"AA51","Log-Rank Test","compare","time_to_event","categorical","one","two_plus","any","independent","any"
+"AA52","Confirmatory Factor Analysis (CFA)","validate_measurement","none","continuous|ordinal","any","any","any","independent","any"
+"AA53","Path Analysis","model_paths","continuous|binary|ordinal|count","continuous|categorical|mixed","two_plus","any","any","independent|repeated","any"
+"AA54","Structural Equation Modeling (SEM)","model_paths|validate_measurement","continuous|binary|ordinal|count","continuous|categorical|mixed","one_plus","any","any","independent|repeated","any"
+"AA55","Mediation Analysis","model_paths|causal_effect","continuous|binary|ordinal|count","continuous|categorical|mixed","two_plus","any","any","independent|repeated","any"
+"AA56","Latent Growth Curve Modeling","model_paths","continuous|ordinal","continuous|categorical|mixed","any","any","three_plus","repeated","longitudinal"
+"AA57","ARIMA","forecast","continuous","none|continuous","zero|one_plus","one","three_plus","time_series","time_series"
+"AA58","Exponential Smoothing (ETS)","forecast","continuous","none","zero","one","three_plus","time_series","time_series"
+"AA59","Interrupted Time Series","causal_effect|compare","continuous|binary|count","continuous|categorical|mixed","one_plus","one|two_plus","three_plus","time_series","time_series|quasi_experimental"
+"AA60","Propensity Score Methods","causal_effect","any","continuous|categorical|mixed","one_plus","two","any","independent|repeated","observational|quasi_experimental"
+"AA61","Gradient Boosting","predict","continuous|binary|nominal|count","continuous|categorical|mixed","one_plus","any","any","independent","any"
+"AA62","Ridge Regression","predict|associate","continuous|binary|count","continuous|categorical|mixed","one_plus","any","one","independent","any"
+"AA63","LASSO Regression","predict|associate","continuous|binary|count","continuous|categorical|mixed","one_plus","any","one","independent","any"
+"AA64","Elastic Net Regression","predict|associate","continuous|binary|count","continuous|categorical|mixed","one_plus","any","one","independent","any"
+"AA65","Support Vector Machine (SVM)","predict","continuous|binary|nominal","continuous|categorical|mixed","one_plus","any","any","independent","any"
+"AA66","k-Nearest Neighbors (kNN)","predict","continuous|binary|nominal","continuous|categorical|mixed","one_plus","any","any","independent","any"
+"AA67","Naive Bayes","predict","binary|nominal","continuous|categorical|mixed","one_plus","any","any","independent","any"
+"AA68","Artificial Neural Network","predict","continuous|binary|nominal|count","continuous|categorical|mixed","one_plus","any","any","independent","any"
+"AA69","K-Means Clustering","cluster","none","continuous","any","any","any","independent","any"
+"AA70","Hierarchical Clustering","cluster","none","continuous|categorical|mixed","any","any","any","independent","any"
+"AA71","DBSCAN","cluster","none","continuous","any","any","any","independent","any"
+"AA72","Isolation Forest","detect_anomalies","none","continuous|categorical|mixed","any","any","any","independent","any"
+"AA73","Distributed Lag Non-Linear Model (DLNM)","associate","continuous|binary|count","continuous|mixed","one_plus","any","three_plus","time_series|repeated","observational|time_series|longitudinal"
