@@ -124,11 +124,12 @@ launch_app <- function() {
     shiny::div(
       class = "aa-header",
       shiny::div(class = "aa-label",
-                 "STATISTICAL ANALYSIS ADVISOR"),
+                 "STATISTICAL ANALYSIS ADVISOR:"),
       shiny::h2("AdamsAnalysis"),
+      shiny::h3("An algorithmic aide memoire, designed to help you consider the appropriate statistical analysis for your research project."),
       shiny::p(
         class = "aa-muted",
-        "AdamsAnalysis is a algorithmic aide memoire, designed to help you consider the appropriate statistical analysis for your research project."
+        "Author: Adam Taggart PhD"
       )
     ),
 
