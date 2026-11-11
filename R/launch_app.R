@@ -161,14 +161,17 @@ launch_app <- function() {
           shiny::uiOutput("recommendation_ui")
         ),
 
+
         shiny::div(
           class = "aa-card",
           shiny::h4("Research Summary"),
-          shiny::div(
-            class = "aa-empty",
-            "Your research characteristics will appear here."
+          shiny::tableOutput("research_summary"),
+          shiny::downloadButton(
+            outputId = "download_report",
+            label = "Download Analysis Report"
           )
         )
+
       )
     )
   )
@@ -245,16 +248,217 @@ launch_app <- function() {
       )
     })
 
-    # Recommendations remain a placeholder
-    output$recommendation_ui <- shiny::renderUI({
-      shiny::div(
-        class = "aa-empty",
-        shiny::tags$strong("Not evaluated"),
-        shiny::p(
-          "Complete the questionnaire to identify suitable analyses."
-        )
+
+    # Generate recommendations whenever answers change
+    recommendation <- shiny::reactive({
+
+      a <- answers()
+
+      # Wait until an objective has been selected
+      if (is.null(a$Q01) || a$Q01 == "unknown") {
+        return(NULL)
+      }
+
+      tryCatch(
+        recommend_methods(a),
+        error = function(e) {
+          list(status = "error", message = conditionMessage(e))
+        }
       )
     })
+
+    # Display statistical recommendations
+    output$recommendation_ui <- shiny::renderUI({
+
+      r <- recommendation()
+
+      if (is.null(r)) {
+        return(shiny::div(
+          class = "aa-empty",
+          "Select a research objective to begin."
+        ))
+      }
+
+      if (r$status == "error") {
+        return(shiny::div(
+          class = "aa-empty",
+          shiny::strong("Recommendation error"),
+          shiny::p(r$message)
+        ))
+      }
+
+      shiny::tagList(
+
+        # Recommendation status
+        shiny::p(
+          shiny::strong("Assessment: "),
+          gsub("_", " ", r$status)
+        ),
+
+        shiny::p(r$message),
+
+        # Primary recommendation
+        if (nrow(r$primary) > 0) {
+
+          shiny::tagList(
+            shiny::hr(),
+            shiny::h3(r$primary$method_name[1]),
+
+            shiny::p(r$primary$description[1]),
+
+            shiny::p(
+              shiny::strong("When to use: "),
+              r$primary$when_to_use[1]
+            ),
+
+            shiny::p(
+              shiny::strong("Research example: "),
+              r$primary$example[1]
+            ),
+
+            shiny::p(
+              shiny::strong("Eligibility: "),
+              r$primary$status[1]
+            ),
+
+            shiny::p(
+              shiny::strong("Requirements to verify: "),
+              r$primary$unverified_requirements[1]
+            ),
+
+            shiny::p(
+              shiny::strong("Assumptions to check: "),
+              r$primary$assumptions_to_check[1]
+            ),
+
+            if (nzchar(r$primary$assumption_flags[1])) {
+              shiny::p(
+                shiny::strong("Warnings: "),
+                r$primary$assumption_flags[1]
+              )
+            }
+          )
+        },
+
+
+        # Alternative methods
+        if (nrow(r$alternatives) > 0) {
+
+          shiny::tagList(
+            shiny::hr(),
+            shiny::h4("Other Potential Methods"),
+
+            shiny::tags$ul(
+              lapply(seq_len(nrow(r$alternatives)), function(i) {
+
+                shiny::tags$li(
+                  shiny::strong(
+                    r$alternatives$method_name[i]
+                  ),
+
+                  paste0(
+                    " (", r$alternatives$status[i], ")"
+                  ),
+
+                  shiny::p(
+                    r$alternatives$when_to_use[i]
+                  ),
+
+                  if (nzchar(
+                    r$alternatives$unverified_requirements[i]
+                  )) {
+                    shiny::p(
+                      shiny::strong("To verify: "),
+                      r$alternatives$unverified_requirements[i]
+                    )
+                  }
+                )
+              })
+            )
+          )
+        },
+
+
+        # Outstanding questionnaire items
+        if (nrow(r$missing_questions) > 0) {
+
+          shiny::p(
+            class = "aa-muted",
+            paste(
+              nrow(r$missing_questions),
+              "additional questions can help refine",
+              "this recommendation."
+            )
+          )
+        }
+      )
+    })
+
+
+    # Display the researcher's selected parameters
+    output$research_summary <- shiny::renderTable({
+
+      a <- answers()
+
+      if (length(a) == 0) {
+        return(data.frame(
+          Question = "No responses yet",
+          Answer = ""
+        ))
+      }
+
+      labels <- questionnaire$question[
+        match(names(a), questionnaire$question_id)
+      ]
+
+      values <- vapply(names(a), function(id) {
+
+        if (id == "Q10") {
+          return(as.character(a[[id]]))
+        }
+
+        opts <- questionnaire_options[
+          questionnaire_options$question_id == id, ]
+
+        label <- opts$option_label[
+          opts$option_value == a[[id]]
+        ]
+
+        if (length(label)) label[1]
+        else as.character(a[[id]])
+
+      }, character(1))
+
+      data.frame(
+        Question = labels,
+        Answer = values
+      )
+
+    }, striped = TRUE, rownames = FALSE)
+
+    output$download_report <- shiny::downloadHandler(
+
+      filename = function() {
+        paste0("AdamsAnalysis_", Sys.Date(), ".html")
+      },
+
+      content = function(file) {
+
+        report <- create_report_html(
+          answers(),
+          recommendation()
+        )
+
+        writeLines(
+          enc2utf8(report),
+          con = file,
+          useBytes = TRUE
+        )
+      },
+
+      contentType = "text/html"
+    )
+
   }
 
 

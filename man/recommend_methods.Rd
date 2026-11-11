@@ -12,9 +12,9 @@ recommend_methods(answers = list(), n_alternatives = 3L)
 \item{n_alternatives}{Maximum number of alternatives.}
 }
 \value{
-List containing recommendations and explanations.
+List of recommendations and supporting information.
 }
 \description{
-Combines eligibility filtering and ranking into
-a structured research recommendation.
+Builds a provisional report from filtered and ranked methods.
+A score of zero means no preference matched, NOT that no method fits.
 }

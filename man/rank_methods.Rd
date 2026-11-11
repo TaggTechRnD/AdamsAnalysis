@@ -7,7 +7,7 @@
 rank_methods(answers = list(), include_excluded = FALSE)
 }
 \arguments{
-\item{answers}{Named list of questionnaire answers.}
+\item{answers}{Named list of coded questionnaire responses.}
 
 \item{include_excluded}{Include excluded methods for QA/QC.}
 }
@@ -15,6 +15,6 @@ rank_methods(answers = list(), include_excluded = FALSE)
 Ranked data frame of candidate methods.
 }
 \description{
-Ranks eligible methods using questionnaire answers.
-Statistical assumptions are flagged, not assumed satisfied.
+Applies only preferences supported by the questionnaire; never treats
+unasked assumptions (e.g. equal variances) as observed facts.
 }

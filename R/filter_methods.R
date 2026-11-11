@@ -40,7 +40,8 @@ filter_methods <- function(answers = list(), include_excluded = FALSE) {
         describe = c("describe", "estimate_uncertainty"),
         compare = if (isTRUE(is_value("outcome_type", c("binary", "ordinal", "nominal"))))
           c("compare", "associate") else "compare",
-        associate = "associate", causal = "causal_effect",
+        associate = "associate",
+        causal = c("causal_effect", "compare"),
         predict = "predict", forecast = "forecast",
         latent = c("reduce_dimensions", "validate_measurement", "model_paths"),
         cluster = c("cluster", "detect_anomalies"),
