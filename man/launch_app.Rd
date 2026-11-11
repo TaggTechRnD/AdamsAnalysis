@@ -7,5 +7,5 @@
 launch_app()
 }
 \description{
-Opens the AdamsAnalysis Shiny application locally.
+Opens the AdamsAnalysis Shiny dashboard.
 }
