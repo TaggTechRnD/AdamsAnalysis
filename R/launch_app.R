@@ -53,79 +53,81 @@ launch_app <- function() {
 
   ui <- shiny::fluidPage(
 
+    theme = bslib::bs_theme(bootswatch = 'spacelab'),
+
     title = "AdamsAnalysis",
 
-    shiny::tags$head(
-      shiny::tags$style(shiny::HTML("
-        body {
-          background: #f4f7fb;
-          font-family: 'Segoe UI', Arial, sans-serif;
-          color: #243447;
-        }
-
-        .aa-header {
-          padding: 28px 10px 22px;
-        }
-
-        .aa-header h2 {
-          font-weight: 700;
-          color: #183b63;
-          margin: 8px 0;
-        }
-
-        .aa-muted {
-          color: #718096;
-        }
-
-        .aa-label {
-          color: #2878a8;
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: 1.5px;
-        }
-
-        .aa-card {
-          background: white;
-          border: 1px solid #e4eaf1;
-          border-radius: 12px;
-          padding: 25px;
-          margin-bottom: 20px;
-          box-shadow: 0 3px 12px rgba(0,0,0,0.035);
-        }
-
-        .aa-card h4 {
-          font-weight: 650;
-          color: #183b63;
-          margin-top: 0;
-          margin-bottom: 18px;
-        }
-
-        .aa-empty {
-          background: #f7f9fc;
-          border: 1px dashed #cbd5e1;
-          border-radius: 8px;
-          padding: 25px;
-          text-align: center;
-          color: #718096;
-        }
-
-        .form-group {
-          margin-bottom: 20px;
-        }
-
-        .control-label {
-          font-weight: 600;
-          color: #34465a;
-        }
-      "))
-    ),
+    # shiny::tags$head(
+    #   shiny::tags$style(shiny::HTML("
+    #     body {
+    #       background: #f4f7fb;
+    #       font-family: 'Segoe UI', Arial, sans-serif;
+    #       color: #243447;
+    #     }
+    #
+    #     .aa-header {
+    #       padding: 28px 10px 22px;
+    #     }
+    #
+    #     .aa-header h2 {
+    #       font-weight: 700;
+    #       color: #183b63;
+    #       margin: 8px 0;
+    #     }
+    #
+    #     .aa-muted {
+    #       color: #718096;
+    #     }
+    #
+    #     .aa-label {
+    #       color: #2878a8;
+    #       font-size: 12px;
+    #       font-weight: 700;
+    #       letter-spacing: 1.5px;
+    #     }
+    #
+    #     .aa-card {
+    #       background: white;
+    #       border: 1px solid #e4eaf1;
+    #       border-radius: 12px;
+    #       padding: 25px;
+    #       margin-bottom: 20px;
+    #       box-shadow: 0 3px 12px rgba(0,0,0,0.035);
+    #     }
+    #
+    #     .aa-card h4 {
+    #       font-weight: 650;
+    #       color: #183b63;
+    #       margin-top: 0;
+    #       margin-bottom: 18px;
+    #     }
+    #
+    #     .aa-empty {
+    #       background: #f7f9fc;
+    #       border: 1px dashed #cbd5e1;
+    #       border-radius: 8px;
+    #       padding: 25px;
+    #       text-align: center;
+    #       color: #718096;
+    #     }
+    #
+    #     .form-group {
+    #       margin-bottom: 20px;
+    #     }
+    #
+    #     .control-label {
+    #       font-weight: 600;
+    #       color: #34465a;
+    #     }
+    #   "))
+    # ),
 
     # Header
     shiny::div(
       class = "aa-header",
       shiny::div(class = "aa-label",
-                 "STATISTICAL ANALYSIS ADVISOR:"),
-      shiny::h2("AdamsAnalysis"),
+                 "AdamsAnalysis"),
+      shiny::h2("STATISTICAL ANALYSIS ADVICE"),
       shiny::h3("An algorithmic aide memoire, designed to help you consider the appropriate statistical analysis for your research project."),
       shiny::p(
         class = "aa-muted",
