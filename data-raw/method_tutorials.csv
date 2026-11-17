@@ -1,0 +1,1907 @@
+"method_id","method_name","study_data","learning_goal","r_packages","python_packages","r_code","python_code","output_to_inspect","limitations_and_checks","implementation_note"
+"AA01","Mean and Standard Deviation","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Summarize a continuous health measurement.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+print(c(mean=mean(d$y), sd=sd(d$y), n=length(d$y)))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+print(d.y.agg([""mean"",""std"",""count""]))
+","Compare the sample mean with the SD, both in outcome units.","The SD is not a standard error; outliers can affect both summaries.","comparable"
+"AA02","Median and Interquartile Range","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Summarize the center and spread robustly.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+print(quantile(d$y,c(.25,.5,.75)))
+print(IQR(d$y))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+print(d.y.quantile([.25,.5,.75]))
+print(""IQR:"", d.y.quantile(.75)-d.y.quantile(.25))
+","Median, 25th and 75th percentiles; IQR = Q3 − Q1.","Quartiles are sample descriptions, not confidence limits.","comparable"
+"AA03","Frequencies and Proportions","280 independent binary outcomes associated with a continuous risk factor and binary treatment.","Tabulate binary response frequencies.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 280
+x <- rnorm(n)
+treatment <- rbinom(n, 1, 0.5)
+p <- plogis(-0.5 + 0.8*x - 0.7*treatment)
+y <- rbinom(n, 1, p)
+d <- data.frame(y, x, treatment)
+
+print(table(d$y))
+print(prop.table(table(d$y)))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 280
+x = rng.normal(size=n)
+treatment = rng.binomial(1, .5, n)
+p = 1 / (1 + np.exp(-(-.5 + .8*x - .7*treatment)))
+y = rng.binomial(1, p)
+d = pd.DataFrame({""y"": y,""x"": x,""treatment"":treatment})
+
+print(d.y.value_counts().sort_index())
+print(d.y.value_counts(normalize=True).sort_index())
+","Counts and sample proportions in each category.","Specify denominator and missing-data policy.","comparable"
+"AA04","Pearson Correlation","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Estimate linear association between two measurements.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+print(cor.test(d$x,d$y,method=""pearson""))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+from scipy import stats
+print(stats.pearsonr(d.x,d.y))
+","Pearson r and p-value; inspect a scatterplot separately.","Linear association is not causal; extreme points can dominate.","comparable"
+"AA05","Spearman Correlation","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Estimate monotonic association based on ranks.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+print(cor.test(d$x,d$y,method=""spearman"",exact=FALSE))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+from scipy import stats
+print(stats.spearmanr(d.x,d.y))
+","Spearman rho and p-value.","A monotonic trend is not necessarily linear or causal.","comparable"
+"AA06","Independent Samples t-Test","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Compare means between independent groups under equal-variance assumption.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+print(t.test(y ~ group, data=d, var.equal=TRUE))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+from scipy import stats
+u=d.loc[d.group==""Control"",""y""]
+v=d.loc[d.group==""Treatment"",""y""]
+print(stats.ttest_ind(u,v,equal_var=True))
+","Mean difference and t test; assess group variances.","Equal-variance assumption is explicit; use Welch if questionable.","comparable"
+"AA07","Welch's t-Test","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Compare independent means without requiring equal variances.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+print(t.test(y ~ group, data=d, var.equal=FALSE))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+from scipy import stats
+u=d.loc[d.group==""Control"",""y""]
+v=d.loc[d.group==""Treatment"",""y""]
+print(stats.ttest_ind(u,v,equal_var=False))
+","Welch t statistic, approximate df and p-value.","Independence and suitable outcome scale remain necessary.","comparable"
+"AA08","Paired t-Test","90 participants with correlated baseline and follow-up blood-pressure readings.","Evaluate within-person mean change.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 90
+before <- rnorm(n, mean = 125, sd = 13)
+after <- before - 5 + rnorm(n, sd = 7)
+d <- data.frame(id = seq_len(n), before, after)
+
+print(t.test(d$after,d$before,paired=TRUE))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 90
+before = rng.normal(125, 13, n)
+after = before - 5 + rng.normal(0, 7, n)
+d = pd.DataFrame({""id"": np.arange(n), ""before"": before, ""after"": after})
+
+from scipy import stats
+print(stats.ttest_rel(d.after,d.before))
+print(""Mean change:"",(d.after-d.before).mean())
+","Mean paired difference, CI, t statistic.","Check distribution of paired differences, not separate marginal normality.","comparable"
+"AA09","Mann-Whitney U Test","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Compare independent rank distributions.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+print(wilcox.test(y ~ group,data=d,exact=FALSE))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+from scipy import stats
+print(stats.mannwhitneyu(d.loc[d.group==""Control"",""y""],
+                        d.loc[d.group==""Treatment"",""y""],alternative=""two-sided""))
+","Mann–Whitney U/W and p-value.","Not generally a test of median differences unless distribution shapes support that interpretation.","comparable"
+"AA10","Wilcoxon Signed-Rank Test","90 participants with correlated baseline and follow-up blood-pressure readings.","Test whether paired changes are centered at zero in a signed-rank framework.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 90
+before <- rnorm(n, mean = 125, sd = 13)
+after <- before - 5 + rnorm(n, sd = 7)
+d <- data.frame(id = seq_len(n), before, after)
+
+print(wilcox.test(d$after,d$before,paired=TRUE,exact=FALSE))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 90
+before = rng.normal(125, 13, n)
+after = before - 5 + rng.normal(0, 7, n)
+d = pd.DataFrame({""id"": np.arange(n), ""before"": before, ""after"": after})
+
+from scipy import stats
+print(stats.wilcoxon(d.after-d.before,alternative=""two-sided""))
+","Signed-rank statistic and p-value.","Requires appropriate symmetry for a median-change interpretation.","comparable"
+"AA11","One-Way ANOVA","Two independent categorical factors with an interaction on a continuous outcome.","Compare means across independent group levels.","stats","numpy, pandas, scipy","set.seed(2026)
+d <- expand.grid(group = factor(c(""Control"",""Treatment"")),
+                 dose = factor(c(""Low"",""High"")), rep = seq_len(40))
+d$y <- 10 + 2*(d$group == ""Treatment"") + 1*(d$dose == ""High"") +
+  2*(d$group == ""Treatment"")*(d$dose == ""High"") + rnorm(nrow(d), sd = 2)
+
+fit<-aov(y ~ group,data=d)
+print(summary(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+d = pd.MultiIndex.from_product([[""Control"",""Treatment""],[""Low"",""High""],range(40)],
+                               names=[""group"",""dose"",""rep""]).to_frame(index=False)
+d[""y""] = (10 + 2*(d.group == ""Treatment"") + (d.dose == ""High"") +
+          2*(d.group == ""Treatment"")*(d.dose == ""High"") + rng.normal(0, 2, len(d)))
+
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+fit=smf.ols(""y ~ C(group)"",data=d).fit()
+print(sm.stats.anova_lm(fit,typ=2))
+","Between-group F statistic and p-value.","Check independent units, variance pattern, and residuals.","comparable"
+"AA12","Two-Way ANOVA","Two independent categorical factors with an interaction on a continuous outcome.","Estimate main and interaction effects of two between-person factors.","stats","numpy, pandas, scipy","set.seed(2026)
+d <- expand.grid(group = factor(c(""Control"",""Treatment"")),
+                 dose = factor(c(""Low"",""High"")), rep = seq_len(40))
+d$y <- 10 + 2*(d$group == ""Treatment"") + 1*(d$dose == ""High"") +
+  2*(d$group == ""Treatment"")*(d$dose == ""High"") + rnorm(nrow(d), sd = 2)
+
+fit<-aov(y ~ group*dose,data=d)
+print(summary(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+d = pd.MultiIndex.from_product([[""Control"",""Treatment""],[""Low"",""High""],range(40)],
+                               names=[""group"",""dose"",""rep""]).to_frame(index=False)
+d[""y""] = (10 + 2*(d.group == ""Treatment"") + (d.dose == ""High"") +
+          2*(d.group == ""Treatment"")*(d.dose == ""High"") + rng.normal(0, 2, len(d)))
+
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+fit=smf.ols(""y ~ C(group)*C(dose)"",data=d).fit()
+print(sm.stats.anova_lm(fit,typ=2))
+","Group-by-dose interaction F test.","Interpret interaction before interpreting marginal main effects.","comparable"
+"AA13","Repeated-Measures ANOVA","90 participants randomized to two groups, each measured at three visits (long format).","Test changes over repeated visits ignoring between-group effects.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 90
+d <- expand.grid(id = seq_len(n), time = factor(c(""Baseline"",""Week6"",""Week12""),
+                 levels=c(""Baseline"",""Week6"",""Week12"")))
+d$group <- factor(ifelse(d$id <= n/2, ""Control"", ""Treatment""))
+subject_effect <- rnorm(n, sd = 3)
+d$y <- 30 + subject_effect[d$id] + 1.2*(as.integer(d$time)-1) +
+  2*(d$group == ""Treatment"")*(as.integer(d$time)-1) + rnorm(nrow(d), sd=2)
+
+d$id<-factor(d$id)
+fit<-aov(y ~ time + Error(id/time),data=d)
+print(summary(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 90
+d = pd.MultiIndex.from_product([range(n), [""Baseline"",""Week6"",""Week12""]],
+                               names=[""id"",""time""]).to_frame(index=False)
+d[""group""] = np.where(d.id < n // 2, ""Control"", ""Treatment"")
+subject_effect = rng.normal(0, 3, n)
+t = d.time.map({""Baseline"": 0, ""Week6"": 1, ""Week12"": 2}).to_numpy()
+d[""y""] = (30 + subject_effect[d.id.to_numpy()] + 1.2*t +
+          2*(d.group.to_numpy() == ""Treatment"")*t + rng.normal(0,2,len(d)))
+
+from statsmodels.stats.anova import AnovaRM
+print(AnovaRM(data=d,depvar=""y"",subject=""id"",within=[""time""]).fit())
+","Within-person time F statistic.","For between-group effects or missing visits use mixed ANOVA/mixed model; sphericity matters with >2 visits.","comparable"
+"AA14","Mixed-Design ANOVA","90 participants randomized to two groups, each measured at three visits (long format).","Evaluate whether treatment and control groups change differently over visits.","afex","numpy, pandas, pingouin","set.seed(2026)
+n <- 90
+d <- expand.grid(id = seq_len(n), time = factor(c(""Baseline"",""Week6"",""Week12""),
+                 levels=c(""Baseline"",""Week6"",""Week12"")))
+d$group <- factor(ifelse(d$id <= n/2, ""Control"", ""Treatment""))
+subject_effect <- rnorm(n, sd = 3)
+d$y <- 30 + subject_effect[d$id] + 1.2*(as.integer(d$time)-1) +
+  2*(d$group == ""Treatment"")*(as.integer(d$time)-1) + rnorm(nrow(d), sd=2)
+
+# Install optional dependency beforehand: install.packages(""afex"")
+fit<-afex::aov_ez(id=""id"",dv=""y"",data=d,between=""group"",within=""time"")
+print(fit)
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 90
+d = pd.MultiIndex.from_product([range(n), [""Baseline"",""Week6"",""Week12""]],
+                               names=[""id"",""time""]).to_frame(index=False)
+d[""group""] = np.where(d.id < n // 2, ""Control"", ""Treatment"")
+subject_effect = rng.normal(0, 3, n)
+t = d.time.map({""Baseline"": 0, ""Week6"": 1, ""Week12"": 2}).to_numpy()
+d[""y""] = (30 + subject_effect[d.id.to_numpy()] + 1.2*t +
+          2*(d.group.to_numpy() == ""Treatment"")*t + rng.normal(0,2,len(d)))
+
+# Install optional dependency beforehand: pip install pingouin
+import pingouin as pg
+result=pg.mixed_anova(data=d,dv=""y"",within=""time"",between=""group"",subject=""id"")
+print(result)
+","Group × time interaction, F statistic, partial eta-squared; check corrections.","Requires subject IDs, independent groups, complete/balanced visits for this example; a significant interaction alone is not proof of causality.","comparable"
+"AA15","ANCOVA","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Compare group means while adjusting for a continuous baseline covariate.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+fit<-lm(y ~ group + x,data=d)
+print(summary(fit))
+print(anova(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+import statsmodels.formula.api as smf
+fit=smf.ols(""y ~ C(group) + x"",data=d).fit()
+print(fit.summary())
+","Adjusted group coefficient and CI.","Check slope homogeneity by considering a group×covariate term; adjustment alone does not remove confounding.","comparable"
+"AA16","Kruskal-Wallis Test","Two independent categorical factors with an interaction on a continuous outcome.","Compare rank distributions among independent groups.","stats","numpy, pandas, scipy","set.seed(2026)
+d <- expand.grid(group = factor(c(""Control"",""Treatment"")),
+                 dose = factor(c(""Low"",""High"")), rep = seq_len(40))
+d$y <- 10 + 2*(d$group == ""Treatment"") + 1*(d$dose == ""High"") +
+  2*(d$group == ""Treatment"")*(d$dose == ""High"") + rnorm(nrow(d), sd = 2)
+
+print(kruskal.test(y ~ group,data=d))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+d = pd.MultiIndex.from_product([[""Control"",""Treatment""],[""Low"",""High""],range(40)],
+                               names=[""group"",""dose"",""rep""]).to_frame(index=False)
+d[""y""] = (10 + 2*(d.group == ""Treatment"") + (d.dose == ""High"") +
+          2*(d.group == ""Treatment"")*(d.dose == ""High"") + rng.normal(0, 2, len(d)))
+
+from scipy import stats
+samples=[part.y.to_numpy() for _,part in d.groupby(""group"")]
+print(stats.kruskal(*samples))
+","Kruskal–Wallis H and p-value.","Does not automatically test equality of medians for differing distribution shapes.","comparable"
+"AA17","Friedman Test","90 participants randomized to two groups, each measured at three visits (long format).","Compare repeated rank outcomes across three visits.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 90
+d <- expand.grid(id = seq_len(n), time = factor(c(""Baseline"",""Week6"",""Week12""),
+                 levels=c(""Baseline"",""Week6"",""Week12"")))
+d$group <- factor(ifelse(d$id <= n/2, ""Control"", ""Treatment""))
+subject_effect <- rnorm(n, sd = 3)
+d$y <- 30 + subject_effect[d$id] + 1.2*(as.integer(d$time)-1) +
+  2*(d$group == ""Treatment"")*(as.integer(d$time)-1) + rnorm(nrow(d), sd=2)
+
+wide<-reshape(d[,c(""id"",""time"",""y"")],idvar=""id"",timevar=""time"",direction=""wide"")
+print(friedman.test(as.matrix(wide[,grep(""^y[.]"",names(wide))])))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 90
+d = pd.MultiIndex.from_product([range(n), [""Baseline"",""Week6"",""Week12""]],
+                               names=[""id"",""time""]).to_frame(index=False)
+d[""group""] = np.where(d.id < n // 2, ""Control"", ""Treatment"")
+subject_effect = rng.normal(0, 3, n)
+t = d.time.map({""Baseline"": 0, ""Week6"": 1, ""Week12"": 2}).to_numpy()
+d[""y""] = (30 + subject_effect[d.id.to_numpy()] + 1.2*t +
+          2*(d.group.to_numpy() == ""Treatment"")*t + rng.normal(0,2,len(d)))
+
+from scipy import stats
+wide=d.pivot(index=""id"",columns=""time"",values=""y"")
+print(stats.friedmanchisquare(*[wide[c] for c in [""Baseline"",""Week6"",""Week12""]]))
+","Friedman chi-square statistic and p-value.","Requires complete blocks in this example; follow up significant omnibus result with appropriate comparisons.","comparable"
+"AA18","Chi-Square Test of Independence","280 independent binary outcomes associated with a continuous risk factor and binary treatment.","Evaluate association between two categorical variables.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 280
+x <- rnorm(n)
+treatment <- rbinom(n, 1, 0.5)
+p <- plogis(-0.5 + 0.8*x - 0.7*treatment)
+y <- rbinom(n, 1, p)
+d <- data.frame(y, x, treatment)
+
+ct<-table(d$treatment,d$y)
+print(ct)
+print(chisq.test(ct))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 280
+x = rng.normal(size=n)
+treatment = rng.binomial(1, .5, n)
+p = 1 / (1 + np.exp(-(-.5 + .8*x - .7*treatment)))
+y = rng.binomial(1, p)
+d = pd.DataFrame({""y"": y,""x"": x,""treatment"":treatment})
+
+from scipy import stats
+ct=pd.crosstab(d.treatment,d.y)
+print(ct)
+print(stats.chi2_contingency(ct))
+","Observed/expected counts and Pearson chi-square test.","Review expected counts; chi-square does not quantify effect magnitude.","comparable"
+"AA19","Fisher's Exact Test","280 independent binary outcomes associated with a continuous risk factor and binary treatment.","Test association in a two-by-two categorical table.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 280
+x <- rnorm(n)
+treatment <- rbinom(n, 1, 0.5)
+p <- plogis(-0.5 + 0.8*x - 0.7*treatment)
+y <- rbinom(n, 1, p)
+d <- data.frame(y, x, treatment)
+
+ct<-table(d$treatment,d$y)
+print(fisher.test(ct))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 280
+x = rng.normal(size=n)
+treatment = rng.binomial(1, .5, n)
+p = 1 / (1 + np.exp(-(-.5 + .8*x - .7*treatment)))
+y = rng.binomial(1, p)
+d = pd.DataFrame({""y"": y,""x"": x,""treatment"":treatment})
+
+from scipy import stats
+ct=pd.crosstab(d.treatment,d.y).to_numpy()
+print(stats.fisher_exact(ct))
+","Odds ratio and exact p-value.","For 2×2 tables; an odds ratio is not the same as a risk ratio.","comparable"
+"AA20","Simple Linear Regression","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Estimate a linear slope relating x to continuous y.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+fit<-lm(y~x,data=d)
+print(summary(fit))
+print(confint(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+import statsmodels.formula.api as smf
+fit=smf.ols(""y ~ x"",data=d).fit()
+print(fit.summary())
+","Regression slope, CI and R-squared.","Review residual assumptions; slope does not imply a causal relationship.","comparable"
+"AA21","Multiple Linear Regression","Continuous prediction outcome and three features, with a held-out test set.","Estimate adjusted slopes for several predictors and evaluate prediction error.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 300
+x1<-rnorm(n); x2<-rnorm(n); x3<-rnorm(n)
+y<-3 + 2*x1 - x2 + 0.7*x3 + rnorm(n,sd=1.5)
+d<-data.frame(y,x1,x2,x3)
+idx<-sample(seq_len(n),round(.7*n))
+train<-d[idx,];test<-d[-idx,]
+
+fit<-lm(y~x1+x2+x3,data=train)
+print(summary(fit))
+print(mean((predict(fit,newdata=test)-test$y)^2))
+","import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+rng=np.random.default_rng(2026)
+n=300
+x1=rng.normal(size=n);x2=rng.normal(size=n);x3=rng.normal(size=n)
+y=3+2*x1-x2+.7*x3+rng.normal(0,1.5,n)
+d=pd.DataFrame({""y"":y,""x1"":x1,""x2"":x2,""x3"":x3})
+train,test=train_test_split(d,test_size=.3,random_state=2026)
+
+import statsmodels.formula.api as smf
+fit=smf.ols(""y ~ x1+x2+x3"",data=train).fit()
+print(fit.summary())
+print(""Held-out MSE:"",np.mean((fit.predict(test)-test.y)**2))
+","Coefficients, intervals, and held-out MSE.","Correlated predictors complicate attribution; training fit is not out-of-sample accuracy.","comparable"
+"AA22","Binary Logistic Regression","280 independent binary outcomes associated with a continuous risk factor and binary treatment.","Model the probability of a binary outcome through log-odds.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 280
+x <- rnorm(n)
+treatment <- rbinom(n, 1, 0.5)
+p <- plogis(-0.5 + 0.8*x - 0.7*treatment)
+y <- rbinom(n, 1, p)
+d <- data.frame(y, x, treatment)
+
+fit<-glm(y~x+treatment,data=d,family=binomial())
+print(summary(fit))
+print(exp(coef(fit)))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 280
+x = rng.normal(size=n)
+treatment = rng.binomial(1, .5, n)
+p = 1 / (1 + np.exp(-(-.5 + .8*x - .7*treatment)))
+y = rng.binomial(1, p)
+d = pd.DataFrame({""y"": y,""x"": x,""treatment"":treatment})
+
+import statsmodels.formula.api as smf
+fit=smf.logit(""y ~ x + treatment"",data=d).fit(disp=False)
+print(fit.summary())
+print(""Odds ratios:\n"",np.exp(fit.params))
+","Log-odds coefficients, odds ratios and uncertainty.","Odds ratios are not risk ratios; check separation and calibration.","comparable"
+"AA23","Poisson Regression","Counts observed over differing exposure durations with an association between rate and covariate.","Model event rates with person-time/exposure offset.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 280
+x <- rnorm(n)
+exposure <- runif(n, 0.5, 2)
+mu <- exp(0.5 + 0.6*x + log(exposure))
+y <- rpois(n, lambda = mu)
+d <- data.frame(y, x, exposure)
+
+fit<-glm(y~x+offset(log(exposure)),family=poisson(),data=d)
+print(summary(fit))
+print(exp(coef(fit)))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 280
+x = rng.normal(size=n)
+exposure = rng.uniform(.5, 2, n)
+mu = np.exp(.5 + .6*x + np.log(exposure))
+y = rng.poisson(mu)
+d = pd.DataFrame({""y"":y,""x"":x,""exposure"":exposure})
+
+import statsmodels.formula.api as smf
+import statsmodels.api as sm
+fit=smf.glm(""y ~ x"",data=d,family=sm.families.Poisson(),
+            offset=np.log(d.exposure)).fit()
+print(fit.summary())
+print(""Rate ratios:\n"",np.exp(fit.params))
+","Rate ratio exp(beta) and fit diagnostics.","Assess overdispersion and excess zeros; offset assumes coefficient fixed at one.","comparable"
+"AA24","Linear Mixed-Effects Model","90 participants randomized to two groups, each measured at three visits (long format).","Fit correlated repeated measurements using a random participant intercept.","lme4","numpy, pandas, statsmodels","set.seed(2026)
+n <- 90
+d <- expand.grid(id = seq_len(n), time = factor(c(""Baseline"",""Week6"",""Week12""),
+                 levels=c(""Baseline"",""Week6"",""Week12"")))
+d$group <- factor(ifelse(d$id <= n/2, ""Control"", ""Treatment""))
+subject_effect <- rnorm(n, sd = 3)
+d$y <- 30 + subject_effect[d$id] + 1.2*(as.integer(d$time)-1) +
+  2*(d$group == ""Treatment"")*(as.integer(d$time)-1) + rnorm(nrow(d), sd=2)
+
+fit<-lme4::lmer(y~group*time+(1|id),data=d,REML=FALSE)
+print(summary(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 90
+d = pd.MultiIndex.from_product([range(n), [""Baseline"",""Week6"",""Week12""]],
+                               names=[""id"",""time""]).to_frame(index=False)
+d[""group""] = np.where(d.id < n // 2, ""Control"", ""Treatment"")
+subject_effect = rng.normal(0, 3, n)
+t = d.time.map({""Baseline"": 0, ""Week6"": 1, ""Week12"": 2}).to_numpy()
+d[""y""] = (30 + subject_effect[d.id.to_numpy()] + 1.2*t +
+          2*(d.group.to_numpy() == ""Treatment"")*t + rng.normal(0,2,len(d)))
+
+import statsmodels.formula.api as smf
+fit=smf.mixedlm(""y ~ C(group)*C(time)"",data=d,groups=d[""id""]).fit(reml=False)
+print(fit.summary())
+","Fixed group/time/interaction effects and random intercept variance.","Random-effects structure and missingness assumptions require checking.","comparable"
+"AA25","Generalized Linear Mixed Model (GLMM)","280 independent binary outcomes associated with a continuous risk factor and binary treatment.","Model binary outcomes clustered within participants.","lme4","numpy, pandas, statsmodels","set.seed(2026)
+n <- 280
+x <- rnorm(n)
+treatment <- rbinom(n, 1, 0.5)
+p <- plogis(-0.5 + 0.8*x - 0.7*treatment)
+y <- rbinom(n, 1, p)
+d <- data.frame(y, x, treatment)
+
+set.seed(2026)
+d$id<-rep(seq_len(70),each=4)
+d$subject<-rnorm(70)[d$id]
+d$y<-rbinom(nrow(d),1,plogis(-.5+.8*d$x+.6*d$subject))
+fit<-lme4::glmer(y~x+(1|id),data=d,family=binomial())
+print(summary(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 280
+x = rng.normal(size=n)
+treatment = rng.binomial(1, .5, n)
+p = 1 / (1 + np.exp(-(-.5 + .8*x - .7*treatment)))
+y = rng.binomial(1, p)
+d = pd.DataFrame({""y"": y,""x"": x,""treatment"":treatment})
+
+# Bayesian GLMM demonstration; not the same estimator as lme4::glmer
+import statsmodels.api as sm
+d[""id""]=np.repeat(np.arange(70),4)
+subject=rng.normal(size=70)
+p=1/(1+np.exp(-(-.5+.8*d.x.to_numpy()+.6*subject[d.id.to_numpy()])))
+d[""y""]=rng.binomial(1,p)
+fit=sm.BinomialBayesMixedGLM.from_formula(""y ~ x"",{""id"":""0 + C(id)""},d).fit_vb()
+print(fit.summary())
+","Conditional fixed effects and between-person heterogeneity.","Python uses a Bayesian variational fit; numerical estimates and uncertainty differ from frequentist lme4.","analog: frequentist versus Bayesian estimators"
+"AA26","Principal Component Analysis (PCA)","Six observed survey items generated from two correlated latent factors.","Find orthogonal directions explaining variability in standardized indicators.","stats","numpy, pandas, scikit-learn","set.seed(2026)
+n <- 240
+f1 <- rnorm(n); f2 <- 0.3*f1 + rnorm(n)
+d <- data.frame(
+  a1=0.9*f1+rnorm(n,sd=.5), a2=0.8*f1+rnorm(n,sd=.6),
+  a3=0.7*f1+rnorm(n,sd=.6), b1=0.9*f2+rnorm(n,sd=.5),
+  b2=0.8*f2+rnorm(n,sd=.6), b3=0.7*f2+rnorm(n,sd=.6))
+
+fit<-prcomp(d,center=TRUE,scale.=TRUE)
+print(summary(fit))
+print(fit$rotation)
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 240
+f1 = rng.normal(size=n); f2 = .3*f1 + rng.normal(size=n)
+d = pd.DataFrame({
+ ""a1"":.9*f1+rng.normal(0,.5,n), ""a2"":.8*f1+rng.normal(0,.6,n),
+ ""a3"":.7*f1+rng.normal(0,.6,n), ""b1"":.9*f2+rng.normal(0,.5,n),
+ ""b2"":.8*f2+rng.normal(0,.6,n), ""b3"":.7*f2+rng.normal(0,.6,n)})
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+z=StandardScaler().fit_transform(d)
+fit=PCA().fit(z)
+print(""Variance explained:"",fit.explained_variance_ratio_)
+print(""Loadings:\n"",fit.components_.T)
+","Explained-variance ratios and loadings.","Component directions are descriptive; PCA does not prove latent constructs.","comparable"
+"AA27","Exploratory Factor Analysis (EFA)","Six observed survey items generated from two correlated latent factors.","Explore a two-factor measurement structure.","stats","numpy, pandas, factor-analyzer","set.seed(2026)
+n <- 240
+f1 <- rnorm(n); f2 <- 0.3*f1 + rnorm(n)
+d <- data.frame(
+  a1=0.9*f1+rnorm(n,sd=.5), a2=0.8*f1+rnorm(n,sd=.6),
+  a3=0.7*f1+rnorm(n,sd=.6), b1=0.9*f2+rnorm(n,sd=.5),
+  b2=0.8*f2+rnorm(n,sd=.6), b3=0.7*f2+rnorm(n,sd=.6))
+
+fit<-factanal(d,factors=2,rotation=""varimax"")
+print(fit)
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 240
+f1 = rng.normal(size=n); f2 = .3*f1 + rng.normal(size=n)
+d = pd.DataFrame({
+ ""a1"":.9*f1+rng.normal(0,.5,n), ""a2"":.8*f1+rng.normal(0,.6,n),
+ ""a3"":.7*f1+rng.normal(0,.6,n), ""b1"":.9*f2+rng.normal(0,.5,n),
+ ""b2"":.8*f2+rng.normal(0,.6,n), ""b3"":.7*f2+rng.normal(0,.6,n)})
+
+# Install optional dependency beforehand: pip install factor_analyzer
+from factor_analyzer import FactorAnalyzer
+fit=FactorAnalyzer(n_factors=2,rotation=""varimax"",method=""ml"").fit(d)
+print(""Loadings:\n"",fit.loadings_)
+print(""Uniquenesses:"",fit.get_uniquenesses())
+","Rotated item loadings and uniquenesses.","Factor count and rotation are substantive choices; factor labels are interpretive.","comparable"
+"AA28","Decision Tree","300 simulated patient records with three predictors and a binary classification outcome; 70/30 split.","Fit an interpretable classification tree and evaluate it on holdout data.","rpart","numpy, pandas, scikit-learn","set.seed(2026)
+n <- 300
+x1 <- rnorm(n); x2 <- rnorm(n); x3 <- rnorm(n)
+p <- plogis(-.2 + 1.2*x1 - .8*x2 + .5*x3)
+y <- factor(rbinom(n,1,p),levels=c(0,1),labels=c(""No"",""Yes""))
+d <- data.frame(x1,x2,x3,y)
+idx <- sample(seq_len(n), size=round(.7*n))
+train <- d[idx,]; test <- d[-idx,]
+
+fit<-rpart::rpart(y~x1+x2+x3,data=train,method=""class"")
+p<-predict(fit,newdata=test,type=""class"")
+print(table(truth=test$y,predicted=p))
+","import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+rng = np.random.default_rng(2026)
+n = 300
+x1=rng.normal(size=n); x2=rng.normal(size=n); x3=rng.normal(size=n)
+p=1/(1+np.exp(-(-.2+1.2*x1-.8*x2+.5*x3)))
+y=rng.binomial(1,p)
+d=pd.DataFrame({""x1"":x1,""x2"":x2,""x3"":x3,""y"":y})
+train,test=train_test_split(d, test_size=.3, random_state=2026, stratify=d.y)
+
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+fit=DecisionTreeClassifier(max_depth=3,random_state=2026).fit(train[[""x1"",""x2"",""x3""]],train.y)
+p=fit.predict(test[[""x1"",""x2"",""x3""]])
+print(""Test accuracy:"",accuracy_score(test.y,p))
+","Confusion matrix or test accuracy and tree splits.","A single tree is unstable; avoid evaluating it only on the training set.","comparable"
+"AA29","Random Forest","300 simulated patient records with three predictors and a binary classification outcome; 70/30 split.","Classify outcomes with an ensemble of trees.","randomForest","numpy, pandas, scikit-learn","set.seed(2026)
+n <- 300
+x1 <- rnorm(n); x2 <- rnorm(n); x3 <- rnorm(n)
+p <- plogis(-.2 + 1.2*x1 - .8*x2 + .5*x3)
+y <- factor(rbinom(n,1,p),levels=c(0,1),labels=c(""No"",""Yes""))
+d <- data.frame(x1,x2,x3,y)
+idx <- sample(seq_len(n), size=round(.7*n))
+train <- d[idx,]; test <- d[-idx,]
+
+fit<-randomForest::randomForest(y~x1+x2+x3,data=train,ntree=200)
+p<-predict(fit,newdata=test)
+print(table(truth=test$y,predicted=p))
+","import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+rng = np.random.default_rng(2026)
+n = 300
+x1=rng.normal(size=n); x2=rng.normal(size=n); x3=rng.normal(size=n)
+p=1/(1+np.exp(-(-.2+1.2*x1-.8*x2+.5*x3)))
+y=rng.binomial(1,p)
+d=pd.DataFrame({""x1"":x1,""x2"":x2,""x3"":x3,""y"":y})
+train,test=train_test_split(d, test_size=.3, random_state=2026, stratify=d.y)
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import confusion_matrix
+fit=RandomForestClassifier(n_estimators=200,random_state=2026).fit(train[[""x1"",""x2"",""x3""]],train.y)
+p=fit.predict(test[[""x1"",""x2"",""x3""]])
+print(confusion_matrix(test.y,p))
+","Holdout confusion matrix and class-level performance.","Feature importance is not causal; tune parameters with cross-validation.","comparable"
+"AA30","Difference-in-Differences (DiD)","Two groups observed before/after a policy; simulated common background trend and treatment interaction.","Estimate treated-minus-control difference in pre/post changes.","lmtest, sandwich","numpy, pandas, statsmodels","set.seed(2026)
+n<-160
+d<-expand.grid(id=seq_len(n),post=0:1)
+d$treated<-as.integer(d$id>n/2)
+individual<-rnorm(n,sd=2)
+d$y<-10 + individual[d$id] + 1.5*d$post + 2*d$treated*d$post + rnorm(nrow(d))
+
+# Repeated observations: cluster-robust standard errors by id
+fit<-lm(y~treated*post,data=d)
+print(lmtest::coeftest(fit,vcov.=sandwich::vcovCL(fit,cluster=d$id)))
+","import numpy as np
+import pandas as pd
+rng=np.random.default_rng(2026)
+n=160
+d=pd.MultiIndex.from_product([range(n),[0,1]],names=[""id"",""post""]).to_frame(index=False)
+d[""treated""]=(d.id>=n//2).astype(int)
+individual=rng.normal(0,2,n)
+d[""y""]=10+individual[d.id.to_numpy()]+1.5*d.post+2*d.treated*d.post+rng.normal(size=len(d))
+
+import statsmodels.formula.api as smf
+fit=smf.ols(""y ~ treated*post"",data=d).fit(
+    cov_type=""cluster"",cov_kwds={""groups"":d.id})
+print(fit.summary().tables[1])
+","Coefficient on treated:post and cluster-robust uncertainty.","Two observed periods cannot test pre-treatment parallel trends; this illustration ASSUMES parallel trends.","comparable"
+"AA31","Cross-Tabulation","280 independent binary outcomes associated with a continuous risk factor and binary treatment.","Produce cross-tabulations and within-group proportions.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 280
+x <- rnorm(n)
+treatment <- rbinom(n, 1, 0.5)
+p <- plogis(-0.5 + 0.8*x - 0.7*treatment)
+y <- rbinom(n, 1, p)
+d <- data.frame(y, x, treatment)
+
+ct<-table(Treatment=d$treatment,Outcome=d$y)
+print(addmargins(ct))
+print(prop.table(ct,margin=1))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 280
+x = rng.normal(size=n)
+treatment = rng.binomial(1, .5, n)
+p = 1 / (1 + np.exp(-(-.5 + .8*x - .7*treatment)))
+y = rng.binomial(1, p)
+d = pd.DataFrame({""y"": y,""x"": x,""treatment"":treatment})
+
+ct=pd.crosstab(d.treatment,d.y,margins=True)
+print(ct)
+print(pd.crosstab(d.treatment,d.y,normalize=""index""))
+","Cell counts, margins, and denominator-aware percentages.","A crosstab is descriptive; no causal inference is justified.","comparable"
+"AA32","Confidence Intervals","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Calculate a 95% confidence interval for a population mean under sampling assumptions.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+print(t.test(d$y,conf.level=.95)$conf.int)
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+from scipy import stats
+m=d.y.mean(); se=d.y.sem();df=len(d)-1
+print(stats.t.interval(.95,df,loc=m,scale=se))
+","Lower and upper confidence limits.","The 95% interval is not a 95% probability interval for individual outcomes.","comparable"
+"AA33","Kendall's Tau","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Estimate ordinal concordance.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+print(cor.test(d$x,d$y,method=""kendall"",exact=FALSE))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+from scipy import stats
+print(stats.kendalltau(d.x,d.y))
+","Kendall tau and p-value.","Association is noncausal and may reflect confounding.","comparable"
+"AA34","Point-Biserial Correlation","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Quantify association of a binary group indicator and a numerical outcome (here binary for illustration).","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+indicator<-as.integer(d$group==""Treatment"")
+print(cor.test(indicator,d$y,method=""pearson""))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+from scipy import stats
+indicator=(d.group==""Treatment"").astype(int)
+print(stats.pointbiserialr(indicator,d.y))
+","Point-biserial correlation magnitude and p-value.","Continuous outcome and binary group indicator; interpretation is associative, not causal.","comparable"
+"AA35","Partial Correlation","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Estimate the linear x–y correlation after adjusting for group.","stats","numpy, pandas, scipy, statsmodels","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+# Residualize y and x against an observed covariate: group
+rx<-resid(lm(x~group,data=d))
+ry<-resid(lm(y~group,data=d))
+r<-cor(rx,ry); df<-length(rx)-3
+stat<-r*sqrt(df/(1-r^2))
+print(c(partial_r=r, df=df, p_value=2*pt(-abs(stat),df=df)))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+import statsmodels.formula.api as smf
+from scipy import stats
+rx=smf.ols(""x ~ C(group)"",data=d).fit().resid
+ry=smf.ols(""y ~ C(group)"",data=d).fit().resid
+r=np.corrcoef(rx,ry)[0,1]
+df=len(rx)-3
+stat=r*np.sqrt(df/(1-r**2))
+print({""partial_r"":r,""df"":df,""p_value"":2*stats.t.sf(abs(stat),df)})
+","Partial correlation coefficient; note residualization.","For formal inference accounting for control variables, adjust degrees of freedom (naive residual correlation p-value does not).","comparable"
+"AA36","One-Sample t-Test","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Compare sample mean with a prespecified benchmark of 10.","stats","numpy, pandas, scipy","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+print(t.test(d$y,mu=10))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+from scipy import stats
+print(stats.ttest_1samp(d.y,popmean=10))
+","Mean difference, t statistic, p-value, CI.","Benchmark must be prespecified; independence still matters.","comparable"
+"AA37","Welch's ANOVA","Two independent categorical factors with an interaction on a continuous outcome.","Compare three group means under unequal variances.","stats","numpy, pandas, scipy","set.seed(2026)
+d <- expand.grid(group = factor(c(""Control"",""Treatment"")),
+                 dose = factor(c(""Low"",""High"")), rep = seq_len(40))
+d$y <- 10 + 2*(d$group == ""Treatment"") + 1*(d$dose == ""High"") +
+  2*(d$group == ""Treatment"")*(d$dose == ""High"") + rnorm(nrow(d), sd = 2)
+
+# Deliberately create unequal variances across groups
+z<-data.frame(y=c(rnorm(40,0,1),rnorm(40,1,3),rnorm(40,2,5)),
+              grp=factor(rep(c(""A"",""B"",""C""),each=40)))
+print(oneway.test(y~grp,data=z,var.equal=FALSE))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+d = pd.MultiIndex.from_product([[""Control"",""Treatment""],[""Low"",""High""],range(40)],
+                               names=[""group"",""dose"",""rep""]).to_frame(index=False)
+d[""y""] = (10 + 2*(d.group == ""Treatment"") + (d.dose == ""High"") +
+          2*(d.group == ""Treatment"")*(d.dose == ""High"") + rng.normal(0, 2, len(d)))
+
+from scipy import stats
+rng=np.random.default_rng(77)
+groups=[rng.normal(0,1,40),rng.normal(1,3,40),rng.normal(2,5,40)]
+print(stats.f_oneway(*groups,equal_var=False))
+","Welch ANOVA F and approximate degrees of freedom.","Follow-up comparisons must also handle unequal variances.","comparable"
+"AA38","MANOVA","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Test whether independent groups differ on multiple continuous outcomes jointly.","stats","numpy, pandas, statsmodels","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+set.seed(2027)
+d$y2<-5+.7*d$x+0.6*(d$group==""Treatment"")+rnorm(nrow(d))
+fit<-manova(cbind(y,y2)~group,data=d)
+print(summary(fit,test=""Pillai""))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+import statsmodels.api as sm
+from statsmodels.multivariate.manova import MANOVA
+rng2=np.random.default_rng(2027)
+d[""y2""]=5+.7*d.x+.6*(d.group==""Treatment"")+rng2.normal(size=len(d))
+fit=MANOVA.from_formula(""y + y2 ~ C(group)"",data=d)
+print(fit.mv_test())
+","Pillai trace or other multivariate statistic.","Check multivariate outliers and dependence; multivariate significance is not specific to one outcome.","comparable"
+"AA39","McNemar's Test","90 participants with correlated baseline and follow-up blood-pressure readings.","Test change in a paired binary characteristic.","stats","numpy, pandas, statsmodels","set.seed(2026)
+n <- 90
+before <- rnorm(n, mean = 125, sd = 13)
+after <- before - 5 + rnorm(n, sd = 7)
+d <- data.frame(id = seq_len(n), before, after)
+
+set.seed(2026)
+d$pre<-rbinom(nrow(d),1,.35)
+d$post<-ifelse(d$pre==1,rbinom(nrow(d),1,.70),rbinom(nrow(d),1,.23))
+print(mcnemar.test(table(d$pre,d$post)))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 90
+before = rng.normal(125, 13, n)
+after = before - 5 + rng.normal(0, 7, n)
+d = pd.DataFrame({""id"": np.arange(n), ""before"": before, ""after"": after})
+
+from statsmodels.stats.contingency_tables import mcnemar
+pre=rng.binomial(1,.35,len(d))
+post=np.where(pre==1,rng.binomial(1,.70,len(d)),rng.binomial(1,.23,len(d)))
+ct=pd.crosstab(pre,post).reindex(index=[0,1],columns=[0,1],fill_value=0)
+print(mcnemar(ct.to_numpy(),exact=False,correction=True))
+","McNemar p-value based on discordant pairs.","Within-person paired 2×2 table is required; independent chi-square is inappropriate.","comparable"
+"AA40","Polynomial Regression","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Fit quadratic association allowing curvature.","stats","numpy, pandas, statsmodels","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+fit<-lm(y~poly(x,2,raw=TRUE),data=d)
+print(summary(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+import statsmodels.formula.api as smf
+fit=smf.ols(""y ~ x + I(x**2)"",data=d).fit()
+print(fit.summary())
+","Linear and squared coefficients and fitted curve.","Polynomial terms describe shape; extrapolation can be unstable.","comparable"
+"AA41","Generalized Additive Model (GAM)","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Estimate a smooth nonlinear relationship.","mgcv","numpy, pandas, pygam","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+fit<-mgcv::gam(y~s(x,k=10),data=d,method=""REML"")
+print(summary(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+# Install optional dependency beforehand: pip install pygam
+from pygam import LinearGAM, s
+fit=LinearGAM(s(0,n_splines=10)).fit(d[[""x""]].to_numpy(),d.y.to_numpy())
+print(fit.summary())
+","Estimated smooth, effective degrees of freedom, and uncertainty.","Smooth significance can be optimistic without adequate model checks; R and Python smoothing defaults differ.","comparable spline-based GAM; defaults differ"
+"AA42","Multinomial Logistic Regression","280 independent binary outcomes associated with a continuous risk factor and binary treatment.","Model an unordered outcome with three categories.","nnet","numpy, pandas, statsmodels","set.seed(2026)
+n <- 280
+x <- rnorm(n)
+treatment <- rbinom(n, 1, 0.5)
+p <- plogis(-0.5 + 0.8*x - 0.7*treatment)
+y <- rbinom(n, 1, p)
+d <- data.frame(y, x, treatment)
+
+set.seed(2027)
+score<-0.8*d$x-0.4*d$treatment+rnorm(nrow(d))
+d$category<-factor(cut(score,breaks=c(-Inf,-.5,.5,Inf),labels=c(""Low"",""Mid"",""High"")))
+fit<-nnet::multinom(category~x+treatment,data=d,trace=FALSE)
+print(summary(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 280
+x = rng.normal(size=n)
+treatment = rng.binomial(1, .5, n)
+p = 1 / (1 + np.exp(-(-.5 + .8*x - .7*treatment)))
+y = rng.binomial(1, p)
+d = pd.DataFrame({""y"": y,""x"": x,""treatment"":treatment})
+
+import statsmodels.api as sm
+score=.8*d.x.to_numpy()-.4*d.treatment.to_numpy()+rng.normal(size=len(d))
+d[""category""]=np.digitize(score,[-.5,.5])
+X=sm.add_constant(d[[""x"",""treatment""]])
+fit=sm.MNLogit(d.category,X).fit(disp=False)
+print(fit.summary())
+","Category-specific log-odds relative to reference class.","This simulated construction has ordered categories; use the multinomial estimator as if labels were nominal.","comparable"
+"AA43","Ordinal Logistic Regression","280 independent binary outcomes associated with a continuous risk factor and binary treatment.","Model proportional-odds cumulative category probabilities.","MASS","numpy, pandas, statsmodels","set.seed(2026)
+n <- 280
+x <- rnorm(n)
+treatment <- rbinom(n, 1, 0.5)
+p <- plogis(-0.5 + 0.8*x - 0.7*treatment)
+y <- rbinom(n, 1, p)
+d <- data.frame(y, x, treatment)
+
+set.seed(2027)
+score<-0.8*d$x-0.4*d$treatment+rnorm(nrow(d))
+d$grade<-ordered(cut(score,breaks=c(-Inf,-.5,.5,Inf),labels=c(""Low"",""Mid"",""High"")))
+fit<-MASS::polr(grade~x+treatment,data=d,method=""logistic"",Hess=TRUE)
+print(summary(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 280
+x = rng.normal(size=n)
+treatment = rng.binomial(1, .5, n)
+p = 1 / (1 + np.exp(-(-.5 + .8*x - .7*treatment)))
+y = rng.binomial(1, p)
+d = pd.DataFrame({""y"": y,""x"": x,""treatment"":treatment})
+
+from statsmodels.miscmodels.ordinal_model import OrderedModel
+score=.8*d.x.to_numpy()-.4*d.treatment.to_numpy()+rng.normal(size=len(d))
+d[""grade""]=np.digitize(score,[-.5,.5])
+fit=OrderedModel(d.grade,d[[""x"",""treatment""]],distr=""logit"").fit(method=""bfgs"",disp=False)
+print(fit.summary())
+","Common slope odds ratios and estimated thresholds.","Test proportional-odds assumption; slope signs depend on cumulative-odds convention.","comparable"
+"AA44","Negative Binomial Regression","Overdispersed counts: variance exceeds the mean.","Model overdispersed event counts.","MASS","numpy, pandas, statsmodels","set.seed(2026)
+n <- 300
+x <- rnorm(n)
+mu <- exp(0.4 + 0.55*x)
+y <- rnbinom(n, size = 1.2, mu = mu)
+d <- data.frame(y, x)
+
+fit<-MASS::glm.nb(y~x,data=d)
+print(summary(fit))
+print(exp(coef(fit)))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 300
+x = rng.normal(size=n)
+mu = np.exp(.4 + .55*x)
+y = rng.negative_binomial(1.2, 1.2/(1.2+mu))
+d = pd.DataFrame({""y"":y,""x"":x})
+
+import statsmodels.formula.api as smf
+fit=smf.negativebinomial(""y ~ x"",data=d).fit(disp=False)
+print(fit.summary())
+","Log count ratio, dispersion parameter and model uncertainty.","Compare with Poisson dispersion; NB models do not automatically handle excess structural zeros.","comparable"
+"AA45","Zero-Inflated Regression","Counts observed over differing exposure durations with an association between rate and covariate.","Fit distinct processes for zero inflation and positive count intensity.","pscl","numpy, pandas, statsmodels","set.seed(2026)
+n <- 280
+x <- rnorm(n)
+exposure <- runif(n, 0.5, 2)
+mu <- exp(0.5 + 0.6*x + log(exposure))
+y <- rpois(n, lambda = mu)
+d <- data.frame(y, x, exposure)
+
+set.seed(2027)
+d$y[runif(nrow(d)) < .4] <- 0L
+fit<-pscl::zeroinfl(y~x|x,data=d,dist=""poisson"")
+print(summary(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 280
+x = rng.normal(size=n)
+exposure = rng.uniform(.5, 2, n)
+mu = np.exp(.5 + .6*x + np.log(exposure))
+y = rng.poisson(mu)
+d = pd.DataFrame({""y"":y,""x"":x,""exposure"":exposure})
+
+from statsmodels.discrete.count_model import ZeroInflatedPoisson
+import statsmodels.api as sm
+mask=rng.uniform(size=len(d))<.4
+d.loc[mask,""y""]=0
+X=sm.add_constant(d[[""x""]])
+fit=ZeroInflatedPoisson(d.y,X,exog_infl=X,inflation=""logit"").fit(disp=False)
+print(fit.summary())
+","Inflation and count-part coefficients.","Check whether a separate zero-generating process is theoretically justified; optimization can be unstable.","comparable"
+"AA46","Beta Regression","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Model a proportion strictly between zero and one.","betareg","numpy, pandas, statsmodels","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+set.seed(2027)
+d$prop<-rbeta(nrow(d),shape1=2+exp(.5*d$x),shape2=4)
+fit<-betareg::betareg(prop~x,data=d)
+print(summary(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+from statsmodels.othermod.betareg import BetaModel
+prop=rng.beta(2+np.exp(.5*d.x.to_numpy()),4)
+d[""prop""]=prop
+fit=BetaModel.from_formula(""prop ~ x"",data=d).fit(disp=False)
+print(fit.summary())
+","Mean-link coefficient and precision/dispersion estimates.","Exact zeros or ones need a different model or justified boundary treatment.","comparable"
+"AA47","Quantile Regression","160 independent observations with a continuous outcome, continuous covariate, and two groups.","Estimate conditional median shifts instead of mean shifts.","quantreg","numpy, pandas, statsmodels","set.seed(2026)
+n <- 160
+x <- rnorm(n)
+group <- factor(rep(c(""Control"", ""Treatment""), each = n/2))
+y <- 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rnorm(n, sd = 2)
+d <- data.frame(y, x, group)
+
+fit<-quantreg::rq(y~x+group,tau=.5,data=d)
+print(summary(fit,se=""nid""))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 160
+x = rng.normal(size=n)
+group = np.repeat([""Control"", ""Treatment""], n // 2)
+y = 10 + 1.3 * (group == ""Treatment"") + 0.9 * x + rng.normal(scale=2, size=n)
+d = pd.DataFrame({""y"": y, ""x"": x, ""group"": group})
+
+import statsmodels.formula.api as smf
+fit=smf.quantreg(""y ~ x + C(group)"",data=d).fit(q=.5)
+print(fit.summary())
+","Median regression coefficients at tau=0.5.","Conditional quantile coefficients are not changes in unconditional population medians.","comparable"
+"AA48","Generalized Estimating Equations (GEE)","280 independent binary outcomes associated with a continuous risk factor and binary treatment.","Estimate population-average effects for clustered binary outcomes.","geepack","numpy, pandas, statsmodels","set.seed(2026)
+n <- 280
+x <- rnorm(n)
+treatment <- rbinom(n, 1, 0.5)
+p <- plogis(-0.5 + 0.8*x - 0.7*treatment)
+y <- rbinom(n, 1, p)
+d <- data.frame(y, x, treatment)
+
+set.seed(2027)
+d$id<-rep(seq_len(70),each=4)
+d$y<-rbinom(nrow(d),1,plogis(-.3+.7*d$x+rnorm(70)[d$id]*.3))
+fit<-geepack::geeglm(y~x+treatment,id=id,data=d,
+                     family=binomial(),corstr=""exchangeable"")
+print(summary(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 280
+x = rng.normal(size=n)
+treatment = rng.binomial(1, .5, n)
+p = 1 / (1 + np.exp(-(-.5 + .8*x - .7*treatment)))
+y = rng.binomial(1, p)
+d = pd.DataFrame({""y"": y,""x"": x,""treatment"":treatment})
+
+import statsmodels.api as sm
+from statsmodels.genmod.cov_struct import Exchangeable
+d[""id""]=np.repeat(np.arange(70),4)
+u=rng.normal(size=70)
+p=1/(1+np.exp(-(-.3+.7*d.x.to_numpy()+.3*u[d.id.to_numpy()])))
+d[""y""]=rng.binomial(1,p)
+fit=sm.GEE.from_formula(""y ~ x + treatment"",groups=""id"",data=d,
+                        family=sm.families.Binomial(),cov_struct=Exchangeable()).fit()
+print(fit.summary())
+","Marginal coefficients and robust uncertainty.","GEE requires sufficient independent clusters; working correlation is a modeling choice.","comparable"
+"AA49","Cox Proportional Hazards Regression","Time-to-event outcomes with random right censoring and treatment/risk covariates.","Model covariate effects on the hazard of an event.","survival","numpy, pandas, lifelines","set.seed(2026)
+n <- 250
+x <- rnorm(n)
+treatment <- rbinom(n, 1, 0.5)
+rate <- 0.08*exp(0.5*x - 0.5*treatment)
+true_time <- rexp(n, rate=rate)
+censor_time <- runif(n, 5, 22)
+time <- pmin(true_time, censor_time)
+event <- as.integer(true_time <= censor_time)
+d <- data.frame(time, event, x, treatment)
+
+fit<-survival::coxph(survival::Surv(time,event)~x+treatment,data=d)
+print(summary(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 250
+x = rng.normal(size=n)
+treatment = rng.binomial(1, .5, n)
+rate = .08*np.exp(.5*x - .5*treatment)
+true_time = rng.exponential(scale=1/rate)
+censor_time = rng.uniform(5,22,n)
+time = np.minimum(true_time,censor_time)
+event = (true_time <= censor_time).astype(int)
+d = pd.DataFrame({""time"":time,""event"":event,""x"":x,""treatment"":treatment})
+
+# Install optional dependency beforehand: pip install lifelines
+from lifelines import CoxPHFitter
+fit=CoxPHFitter().fit(d,duration_col=""time"",event_col=""event"")
+print(fit.summary[[""coef"",""exp(coef)"",""p""]])
+","Hazard ratios and CIs; check proportional hazards.","A hazard ratio is not a risk ratio or a difference in mean survival time.","comparable"
+"AA50","Kaplan-Meier Analysis","Time-to-event outcomes with random right censoring and treatment/risk covariates.","Estimate event-free probability over time by treatment arm.","survival","numpy, pandas, lifelines","set.seed(2026)
+n <- 250
+x <- rnorm(n)
+treatment <- rbinom(n, 1, 0.5)
+rate <- 0.08*exp(0.5*x - 0.5*treatment)
+true_time <- rexp(n, rate=rate)
+censor_time <- runif(n, 5, 22)
+time <- pmin(true_time, censor_time)
+event <- as.integer(true_time <= censor_time)
+d <- data.frame(time, event, x, treatment)
+
+fit<-survival::survfit(survival::Surv(time,event)~treatment,data=d)
+print(summary(fit,times=c(5,10)))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 250
+x = rng.normal(size=n)
+treatment = rng.binomial(1, .5, n)
+rate = .08*np.exp(.5*x - .5*treatment)
+true_time = rng.exponential(scale=1/rate)
+censor_time = rng.uniform(5,22,n)
+time = np.minimum(true_time,censor_time)
+event = (true_time <= censor_time).astype(int)
+d = pd.DataFrame({""time"":time,""event"":event,""x"":x,""treatment"":treatment})
+
+# Install optional dependency beforehand: pip install lifelines
+from lifelines import KaplanMeierFitter
+for arm,part in d.groupby(""treatment""):
+    km=KaplanMeierFitter().fit(part.time,part.event,label=f""Arm {arm}"")
+    print(arm,km.survival_function_at_times([5,10]))
+","Kaplan–Meier survival estimates at specific times.","Requires non-informative censoring for conventional interpretation.","comparable"
+"AA51","Log-Rank Test","Time-to-event outcomes with random right censoring and treatment/risk covariates.","Compare event-time curves between treatment arms.","survival","numpy, pandas, lifelines","set.seed(2026)
+n <- 250
+x <- rnorm(n)
+treatment <- rbinom(n, 1, 0.5)
+rate <- 0.08*exp(0.5*x - 0.5*treatment)
+true_time <- rexp(n, rate=rate)
+censor_time <- runif(n, 5, 22)
+time <- pmin(true_time, censor_time)
+event <- as.integer(true_time <= censor_time)
+d <- data.frame(time, event, x, treatment)
+
+print(survival::survdiff(survival::Surv(time,event)~treatment,data=d))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 250
+x = rng.normal(size=n)
+treatment = rng.binomial(1, .5, n)
+rate = .08*np.exp(.5*x - .5*treatment)
+true_time = rng.exponential(scale=1/rate)
+censor_time = rng.uniform(5,22,n)
+time = np.minimum(true_time,censor_time)
+event = (true_time <= censor_time).astype(int)
+d = pd.DataFrame({""time"":time,""event"":event,""x"":x,""treatment"":treatment})
+
+# Install optional dependency beforehand: pip install lifelines
+from lifelines.statistics import logrank_test
+a=d[d.treatment==0];b=d[d.treatment==1]
+print(logrank_test(a.time,b.time,event_observed_A=a.event,event_observed_B=b.event).summary)
+","Log-rank chi-square statistic and p-value.","Censoring assumptions and crossing hazards affect interpretation.","comparable"
+"AA52","Confirmatory Factor Analysis (CFA)","Six observed survey items generated from two correlated latent factors.","Confirm a prespecified two-factor measurement model.","lavaan","numpy, pandas, semopy","set.seed(2026)
+n <- 240
+f1 <- rnorm(n); f2 <- 0.3*f1 + rnorm(n)
+d <- data.frame(
+  a1=0.9*f1+rnorm(n,sd=.5), a2=0.8*f1+rnorm(n,sd=.6),
+  a3=0.7*f1+rnorm(n,sd=.6), b1=0.9*f2+rnorm(n,sd=.5),
+  b2=0.8*f2+rnorm(n,sd=.6), b3=0.7*f2+rnorm(n,sd=.6))
+
+model <- 'F1 =~ a1 + a2 + a3
+F2 =~ b1 + b2 + b3'
+fit <- lavaan::cfa(model,data=d,std.lv=TRUE)
+print(lavaan::fitMeasures(fit,c(""cfi"",""tli"",""rmsea"",""srmr"")))
+print(lavaan::standardizedSolution(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 240
+f1 = rng.normal(size=n); f2 = .3*f1 + rng.normal(size=n)
+d = pd.DataFrame({
+ ""a1"":.9*f1+rng.normal(0,.5,n), ""a2"":.8*f1+rng.normal(0,.6,n),
+ ""a3"":.7*f1+rng.normal(0,.6,n), ""b1"":.9*f2+rng.normal(0,.5,n),
+ ""b2"":.8*f2+rng.normal(0,.6,n), ""b3"":.7*f2+rng.normal(0,.6,n)})
+
+# Install optional dependency beforehand: pip install semopy
+from semopy import Model, calc_stats
+model=""F1 =~ a1 + a2 + a3\nF2 =~ b1 + b2 + b3""
+fit=Model(model)
+fit.fit(d)
+print(calc_stats(fit).loc[[""Value""], [""CFI"",""TLI"",""RMSEA""]])
+print(fit.inspect())
+","Standardized loadings and global model fit statistics.","Good global fit alone does not establish measurement validity; check identification and residuals.","comparable"
+"AA53","Path Analysis","Six observed survey items generated from two correlated latent factors.","Estimate prespecified observed-variable directional regression paths.","lavaan","numpy, pandas, semopy","set.seed(2026)
+n <- 240
+f1 <- rnorm(n); f2 <- 0.3*f1 + rnorm(n)
+d <- data.frame(
+  a1=0.9*f1+rnorm(n,sd=.5), a2=0.8*f1+rnorm(n,sd=.6),
+  a3=0.7*f1+rnorm(n,sd=.6), b1=0.9*f2+rnorm(n,sd=.5),
+  b2=0.8*f2+rnorm(n,sd=.6), b3=0.7*f2+rnorm(n,sd=.6))
+
+model <- 'a2 ~ a1
+b1 ~ a1 + a2'
+fit <- lavaan::sem(model,data=d)
+print(lavaan::parameterEstimates(fit,standardized=TRUE))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 240
+f1 = rng.normal(size=n); f2 = .3*f1 + rng.normal(size=n)
+d = pd.DataFrame({
+ ""a1"":.9*f1+rng.normal(0,.5,n), ""a2"":.8*f1+rng.normal(0,.6,n),
+ ""a3"":.7*f1+rng.normal(0,.6,n), ""b1"":.9*f2+rng.normal(0,.5,n),
+ ""b2"":.8*f2+rng.normal(0,.6,n), ""b3"":.7*f2+rng.normal(0,.6,n)})
+
+# Install optional dependency beforehand: pip install semopy
+from semopy import Model
+model=""a2 ~ a1\nb1 ~ a1 + a2""
+fit=Model(model)
+fit.fit(d)
+print(fit.inspect())
+","Direct path coefficients, uncertainty and fit.","Arrows express modeled hypotheses, not proof of causal direction.","comparable"
+"AA54","Structural Equation Modeling (SEM)","Six observed survey items generated from two correlated latent factors.","Fit a structural relationship between two measured latent constructs.","lavaan","numpy, pandas, semopy","set.seed(2026)
+n <- 240
+f1 <- rnorm(n); f2 <- 0.3*f1 + rnorm(n)
+d <- data.frame(
+  a1=0.9*f1+rnorm(n,sd=.5), a2=0.8*f1+rnorm(n,sd=.6),
+  a3=0.7*f1+rnorm(n,sd=.6), b1=0.9*f2+rnorm(n,sd=.5),
+  b2=0.8*f2+rnorm(n,sd=.6), b3=0.7*f2+rnorm(n,sd=.6))
+
+model <- 'F1 =~ a1+a2+a3
+F2 =~ b1+b2+b3
+F2 ~ F1'
+fit <- lavaan::sem(model,data=d,std.lv=TRUE)
+print(lavaan::fitMeasures(fit,c(""cfi"",""rmsea"",""srmr"")))
+print(lavaan::standardizedSolution(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 240
+f1 = rng.normal(size=n); f2 = .3*f1 + rng.normal(size=n)
+d = pd.DataFrame({
+ ""a1"":.9*f1+rng.normal(0,.5,n), ""a2"":.8*f1+rng.normal(0,.6,n),
+ ""a3"":.7*f1+rng.normal(0,.6,n), ""b1"":.9*f2+rng.normal(0,.5,n),
+ ""b2"":.8*f2+rng.normal(0,.6,n), ""b3"":.7*f2+rng.normal(0,.6,n)})
+
+# Install optional dependency beforehand: pip install semopy
+from semopy import Model, calc_stats
+model=""F1 =~ a1+a2+a3\nF2 =~ b1+b2+b3\nF2 ~ F1""
+fit=Model(model)
+fit.fit(d)
+print(calc_stats(fit).loc[[""Value""],[""CFI"",""RMSEA""]])
+print(fit.inspect())
+","Latent regression slope, standardized loadings and fit indices.","Equivalent covariance patterns can have different causal explanations.","comparable"
+"AA55","Mediation Analysis","Observational treatment assignment dependent on measured confounder x; continuous outcome.","Estimate a proposed indirect pathway through mediator m.","mediation","numpy, pandas, statsmodels","set.seed(2026)
+n<-450
+x<-rnorm(n)
+p_treat<-plogis(-.2+.9*x)
+treated<-rbinom(n,1,p_treat)
+y<-4+1.6*treated+1.4*x+rnorm(n,sd=1.2)
+d<-data.frame(y,x,treated)
+
+set.seed(2027)
+d$m <- .8*d$treated + .5*d$x + rnorm(nrow(d))
+d$y <- .5*d$treated + .6*d$m + .5*d$x + rnorm(nrow(d))
+mfit <- lm(m~treated+x,data=d)
+yfit <- lm(y~treated+m+x,data=d)
+fit <- mediation::mediate(mfit,yfit,treat=""treated"",mediator=""m"",sims=200,
+                          boot=FALSE)
+print(summary(fit))
+","import numpy as np
+import pandas as pd
+rng=np.random.default_rng(2026)
+n=450
+x=rng.normal(size=n)
+p_treat=1/(1+np.exp(-(-.2+.9*x)))
+treated=rng.binomial(1,p_treat)
+y=4+1.6*treated+1.4*x+rng.normal(0,1.2,n)
+d=pd.DataFrame({""y"":y,""x"":x,""treated"":treated})
+
+# Simple bootstrap of product-of-coefficients; not identical to mediation::mediate
+import statsmodels.formula.api as smf
+d[""m""] = .8*d.treated+.5*d.x+rng.normal(size=len(d))
+d[""y""] = .5*d.treated+.6*d.m+.5*d.x+rng.normal(size=len(d))
+a=smf.ols(""m ~ treated + x"",data=d).fit().params[""treated""]
+b=smf.ols(""y ~ treated + m + x"",data=d).fit().params[""m""]
+boot=[]
+for k in range(200):
+    sample=d.iloc[rng.integers(0,len(d),len(d))]
+    aa=smf.ols(""m ~ treated + x"",data=sample).fit().params[""treated""]
+    bb=smf.ols(""y ~ treated + m + x"",data=sample).fit().params[""m""]
+    boot.append(aa*bb)
+print(""Indirect product:"",a*b,""bootstrap interval:"",np.percentile(boot,[2.5,97.5]))
+","Estimated indirect effect and sensitivity to assumptions.","Mediation identification needs strong treatment–mediator and mediator–outcome confounding assumptions; Python uses a simpler product estimator.","analog: mediation estimator versus simple bootstrap product"
+"AA56","Latent Growth Curve Modeling","90 participants randomized to two groups, each measured at three visits (long format).","Represent repeated outcomes via latent intercept and linear change factors.","lavaan","numpy, pandas, semopy","set.seed(2026)
+n <- 90
+d <- expand.grid(id = seq_len(n), time = factor(c(""Baseline"",""Week6"",""Week12""),
+                 levels=c(""Baseline"",""Week6"",""Week12"")))
+d$group <- factor(ifelse(d$id <= n/2, ""Control"", ""Treatment""))
+subject_effect <- rnorm(n, sd = 3)
+d$y <- 30 + subject_effect[d$id] + 1.2*(as.integer(d$time)-1) +
+  2*(d$group == ""Treatment"")*(as.integer(d$time)-1) + rnorm(nrow(d), sd=2)
+
+wide<-reshape(d[,c(""id"",""time"",""y"")],idvar=""id"",timevar=""time"",direction=""wide"")
+names(wide)<-sub(""y[.]"",""y_"",names(wide))
+model <- 'i =~ 1*y_Baseline + 1*y_Week6 + 1*y_Week12
+  s =~ 0*y_Baseline + 1*y_Week6 + 2*y_Week12
+  i ~~ s'
+fit<-lavaan::growth(model,data=wide)
+print(lavaan::parameterEstimates(fit))
+","import numpy as np
+import pandas as pd
+rng = np.random.default_rng(2026)
+n = 90
+d = pd.MultiIndex.from_product([range(n), [""Baseline"",""Week6"",""Week12""]],
+                               names=[""id"",""time""]).to_frame(index=False)
+d[""group""] = np.where(d.id < n // 2, ""Control"", ""Treatment"")
+subject_effect = rng.normal(0, 3, n)
+t = d.time.map({""Baseline"": 0, ""Week6"": 1, ""Week12"": 2}).to_numpy()
+d[""y""] = (30 + subject_effect[d.id.to_numpy()] + 1.2*t +
+          2*(d.group.to_numpy() == ""Treatment"")*t + rng.normal(0,2,len(d)))
+
+# Install optional dependency beforehand: pip install semopy
+from semopy import Model
+wide=d.pivot(index=""id"",columns=""time"",values=""y"")
+wide=wide[[""Baseline"",""Week6"",""Week12""]].copy()
+wide.columns=[""y_0"",""y_1"",""y_2""]
+# Demonstrates an SEM-based growth specification; estimator differs from lavaan::growth
+model=""i =~ 1*y_0 + 1*y_1 + 1*y_2\ns =~ 0*y_0 + 1*y_1 + 2*y_2\ni ~~ s""
+fit=Model(model)
+fit.fit(wide)
+print(fit.inspect())
+","Mean and variation of growth factors, where estimated.","Growth identification and mean structure require special care; semopy Model does not exactly replicate lavaan::growth.","analog: SEM growth formulation with different mean-structure defaults"
+"AA57","ARIMA","180 consecutive monthly observations with trend, seasonality and serial dependence.","Fit a seasonal ARIMA model and forecast six periods.","stats","numpy, pandas, statsmodels","set.seed(2026)
+n<-180
+t<-seq_len(n)
+y<-20 + .04*t + 2*sin(2*pi*t/12) + as.numeric(arima.sim(list(ar=.5),n=n,sd=1.5))
+d<-data.frame(t,y)
+
+series<-ts(d$y,frequency=12)
+fit<-arima(series,order=c(1,1,1),seasonal=list(order=c(0,1,1),period=12))
+print(fit)
+print(predict(fit,n.ahead=6)$pred)
+","import numpy as np
+import pandas as pd
+rng=np.random.default_rng(2026)
+n=180
+t=np.arange(1,n+1)
+eps=rng.normal(0,1.5,n)
+noise=np.zeros(n)
+for j in range(1,n): noise[j]=.5*noise[j-1]+eps[j]
+y=20+.04*t+2*np.sin(2*np.pi*t/12)+noise
+d=pd.DataFrame({""t"":t,""y"":y})
+
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+fit=SARIMAX(d.y,order=(1,1,1),seasonal_order=(0,1,1,12),
+            enforce_stationarity=False,enforce_invertibility=False).fit(disp=False)
+print(fit.forecast(steps=6))
+","Model coefficients, forecast and residual autocorrelation.","Choose order based on diagnostics, not arbitrary default; avoid look-ahead leakage.","comparable"
+"AA58","Exponential Smoothing (ETS)","180 consecutive monthly observations with trend, seasonality and serial dependence.","Model level, trend and additive seasonality using exponential smoothing.","stats","numpy, pandas, statsmodels","set.seed(2026)
+n<-180
+t<-seq_len(n)
+y<-20 + .04*t + 2*sin(2*pi*t/12) + as.numeric(arima.sim(list(ar=.5),n=n,sd=1.5))
+d<-data.frame(t,y)
+
+series<-ts(d$y,frequency=12)
+fit<-HoltWinters(series,seasonal=""additive"")
+print(predict(fit,n.ahead=6))
+","import numpy as np
+import pandas as pd
+rng=np.random.default_rng(2026)
+n=180
+t=np.arange(1,n+1)
+eps=rng.normal(0,1.5,n)
+noise=np.zeros(n)
+for j in range(1,n): noise[j]=.5*noise[j-1]+eps[j]
+y=20+.04*t+2*np.sin(2*np.pi*t/12)+noise
+d=pd.DataFrame({""t"":t,""y"":y})
+
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+fit=ExponentialSmoothing(d.y,trend=""add"",seasonal=""add"",seasonal_periods=12).fit()
+print(fit.forecast(6))
+","Future values, smoothing parameters and out-of-sample errors.","Forecast uncertainty not illustrated; choose additive/multiplicative forms based on data.","comparable"
+"AA59","Interrupted Time Series","180 consecutive monthly observations with trend, seasonality and serial dependence.","Model level and slope changes at a known intervention date.","lmtest, sandwich","numpy, pandas, statsmodels","set.seed(2026)
+n<-180
+t<-seq_len(n)
+y<-20 + .04*t + 2*sin(2*pi*t/12) + as.numeric(arima.sim(list(ar=.5),n=n,sd=1.5))
+d<-data.frame(t,y)
+
+d$post<-as.integer(d$t>=100)
+d$since<-pmax(0,d$t-99)
+d$y<-d$y+2*d$post+.1*d$since
+fit<-lm(y~t+post+since+sin(2*pi*t/12)+cos(2*pi*t/12),data=d)
+print(lmtest::coeftest(fit,vcov.=sandwich::NeweyWest(fit,lag=12,prewhite=FALSE)))
+","import numpy as np
+import pandas as pd
+rng=np.random.default_rng(2026)
+n=180
+t=np.arange(1,n+1)
+eps=rng.normal(0,1.5,n)
+noise=np.zeros(n)
+for j in range(1,n): noise[j]=.5*noise[j-1]+eps[j]
+y=20+.04*t+2*np.sin(2*np.pi*t/12)+noise
+d=pd.DataFrame({""t"":t,""y"":y})
+
+import statsmodels.formula.api as smf
+d[""post""]=(d.t>=100).astype(int)
+d[""since""]=np.maximum(0,d.t-99)
+d[""y""]+=2*d.post+.1*d.since
+fit=smf.ols(""y ~ t + post + since + np.sin(2*np.pi*t/12) + np.cos(2*np.pi*t/12)"",data=d).fit(
+    cov_type=""HAC"",cov_kwds={""maxlags"":12})
+print(fit.summary().tables[1])
+","Post-intervention level change and change in slope.","A segmented regression alone cannot exclude contemporaneous confounding; serial correlation must be checked.","comparable"
+"AA60","Propensity Score Methods","Observational treatment assignment dependent on measured confounder x; continuous outcome.","Estimate inverse-probability-weighted treatment difference using measured covariate x.","lmtest, sandwich","numpy, pandas, statsmodels","set.seed(2026)
+n<-450
+x<-rnorm(n)
+p_treat<-plogis(-.2+.9*x)
+treated<-rbinom(n,1,p_treat)
+y<-4+1.6*treated+1.4*x+rnorm(n,sd=1.2)
+d<-data.frame(y,x,treated)
+
+psfit<-glm(treated~x,family=binomial(),data=d)
+ps<-pmin(pmax(predict(psfit,type=""response""),.02),.98)
+w<-ifelse(d$treated==1,1/ps,1/(1-ps))
+fit<-lm(y~treated,data=d,weights=w)
+print(lmtest::coeftest(fit,vcov.=sandwich::vcovHC(fit,type=""HC1"")))
+print(tapply(w,d$treated,summary))
+","import numpy as np
+import pandas as pd
+rng=np.random.default_rng(2026)
+n=450
+x=rng.normal(size=n)
+p_treat=1/(1+np.exp(-(-.2+.9*x)))
+treated=rng.binomial(1,p_treat)
+y=4+1.6*treated+1.4*x+rng.normal(0,1.2,n)
+d=pd.DataFrame({""y"":y,""x"":x,""treated"":treated})
+
+import statsmodels.formula.api as smf
+psfit=smf.logit(""treated ~ x"",data=d).fit(disp=False)
+ps=np.clip(psfit.predict(d),.02,.98)
+w=np.where(d.treated==1,1/ps,1/(1-ps))
+fit=smf.wls(""y ~ treated"",data=d,weights=w).fit(cov_type=""HC1"")
+print(fit.summary().tables[1])
+print(pd.Series(w).describe())
+","Weighted treatment coefficient, weight range and covariate balance (to check separately).","Truncation, overlap, covariate balance, missing confounders, and variance estimation require care; not automatic causal proof.","comparable"
+"AA61","Gradient Boosting","300 simulated patient records with three predictors and a binary classification outcome; 70/30 split.","Classify disease outcomes using boosted decision trees.","gbm","numpy, pandas, scikit-learn","set.seed(2026)
+n <- 300
+x1 <- rnorm(n); x2 <- rnorm(n); x3 <- rnorm(n)
+p <- plogis(-.2 + 1.2*x1 - .8*x2 + .5*x3)
+y <- factor(rbinom(n,1,p),levels=c(0,1),labels=c(""No"",""Yes""))
+d <- data.frame(x1,x2,x3,y)
+idx <- sample(seq_len(n), size=round(.7*n))
+train <- d[idx,]; test <- d[-idx,]
+
+train$binary<-as.integer(train$y==""Yes"")
+fit<-gbm::gbm(binary~x1+x2+x3,data=train,distribution=""bernoulli"",
+              n.trees=150,interaction.depth=2,shrinkage=.05,
+              bag.fraction=.7,train.fraction=1,verbose=FALSE)
+prob<-predict(fit,newdata=test,n.trees=150,type=""response"")
+print(table(truth=test$y,predicted=ifelse(prob>=.5,""Yes"",""No"")))
+","import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+rng = np.random.default_rng(2026)
+n = 300
+x1=rng.normal(size=n); x2=rng.normal(size=n); x3=rng.normal(size=n)
+p=1/(1+np.exp(-(-.2+1.2*x1-.8*x2+.5*x3)))
+y=rng.binomial(1,p)
+d=pd.DataFrame({""x1"":x1,""x2"":x2,""x3"":x3,""y"":y})
+train,test=train_test_split(d, test_size=.3, random_state=2026, stratify=d.y)
+
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import roc_auc_score
+fit=GradientBoostingClassifier(n_estimators=150,random_state=2026).fit(
+    train[[""x1"",""x2"",""x3""]],train.y)
+prob=fit.predict_proba(test[[""x1"",""x2"",""x3""]])[:,1]
+print(""Test AUC:"",roc_auc_score(test.y,prob))
+","Holdout confusion matrix or AUC; inspect calibration.","R and Python boosting implementations differ; model selection needs validation beyond a single holdout.","comparable boosting families, different defaults"
+"AA62","Ridge Regression","Continuous prediction outcome and three features, with a held-out test set.","Shrink correlated predictor coefficients using ridge penalization.","glmnet","numpy, pandas, scikit-learn","set.seed(2026)
+n <- 300
+x1<-rnorm(n); x2<-rnorm(n); x3<-rnorm(n)
+y<-3 + 2*x1 - x2 + 0.7*x3 + rnorm(n,sd=1.5)
+d<-data.frame(y,x1,x2,x3)
+idx<-sample(seq_len(n),round(.7*n))
+train<-d[idx,];test<-d[-idx,]
+
+X<-as.matrix(train[c(""x1"",""x2"",""x3"")])
+fit<-glmnet::cv.glmnet(X,train$y,alpha=0,nfolds=5)
+p<-as.numeric(predict(fit,s=""lambda.min"",newx=as.matrix(test[c(""x1"",""x2"",""x3"")])))
+print(mean((p-test$y)^2))
+","import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+rng=np.random.default_rng(2026)
+n=300
+x1=rng.normal(size=n);x2=rng.normal(size=n);x3=rng.normal(size=n)
+y=3+2*x1-x2+.7*x3+rng.normal(0,1.5,n)
+d=pd.DataFrame({""y"":y,""x1"":x1,""x2"":x2,""x3"":x3})
+train,test=train_test_split(d,test_size=.3,random_state=2026)
+
+from sklearn.linear_model import RidgeCV
+from sklearn.metrics import mean_squared_error
+cols=[""x1"",""x2"",""x3""]
+fit=RidgeCV(alphas=np.logspace(-3,3,30),cv=5).fit(train[cols],train.y)
+print(""Test MSE:"",mean_squared_error(test.y,fit.predict(test[cols])))
+","Cross-validated penalty and test MSE.","Regularization improves prediction but does not make coefficients causal.","comparable"
+"AA63","LASSO Regression","Continuous prediction outcome and three features, with a held-out test set.","Select/shrink predictors using the L1 penalty.","glmnet","numpy, pandas, scikit-learn","set.seed(2026)
+n <- 300
+x1<-rnorm(n); x2<-rnorm(n); x3<-rnorm(n)
+y<-3 + 2*x1 - x2 + 0.7*x3 + rnorm(n,sd=1.5)
+d<-data.frame(y,x1,x2,x3)
+idx<-sample(seq_len(n),round(.7*n))
+train<-d[idx,];test<-d[-idx,]
+
+X<-as.matrix(train[c(""x1"",""x2"",""x3"")])
+fit<-glmnet::cv.glmnet(X,train$y,alpha=1,nfolds=5)
+print(coef(fit,s=""lambda.min""))
+p<-as.numeric(predict(fit,s=""lambda.min"",newx=as.matrix(test[c(""x1"",""x2"",""x3"")])))
+print(mean((p-test$y)^2))
+","import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+rng=np.random.default_rng(2026)
+n=300
+x1=rng.normal(size=n);x2=rng.normal(size=n);x3=rng.normal(size=n)
+y=3+2*x1-x2+.7*x3+rng.normal(0,1.5,n)
+d=pd.DataFrame({""y"":y,""x1"":x1,""x2"":x2,""x3"":x3})
+train,test=train_test_split(d,test_size=.3,random_state=2026)
+
+from sklearn.linear_model import LassoCV
+from sklearn.metrics import mean_squared_error
+cols=[""x1"",""x2"",""x3""]
+fit=LassoCV(cv=5,random_state=2026,max_iter=5000).fit(train[cols],train.y)
+print(""Coefficients:"",fit.coef_)
+print(""Test MSE:"",mean_squared_error(test.y,fit.predict(test[cols])))
+","Nonzero coefficients, chosen penalty and holdout prediction error.","Variable selection may be unstable across samples; naive post-selection p-values are invalid.","comparable"
+"AA64","Elastic Net Regression","Continuous prediction outcome and three features, with a held-out test set.","Combine L1 and L2 coefficient penalties.","glmnet","numpy, pandas, scikit-learn","set.seed(2026)
+n <- 300
+x1<-rnorm(n); x2<-rnorm(n); x3<-rnorm(n)
+y<-3 + 2*x1 - x2 + 0.7*x3 + rnorm(n,sd=1.5)
+d<-data.frame(y,x1,x2,x3)
+idx<-sample(seq_len(n),round(.7*n))
+train<-d[idx,];test<-d[-idx,]
+
+fit<-glmnet::cv.glmnet(as.matrix(train[c(""x1"",""x2"",""x3"")]),train$y,
+                       alpha=.5,nfolds=5)
+print(coef(fit,s=""lambda.min""))
+","import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+rng=np.random.default_rng(2026)
+n=300
+x1=rng.normal(size=n);x2=rng.normal(size=n);x3=rng.normal(size=n)
+y=3+2*x1-x2+.7*x3+rng.normal(0,1.5,n)
+d=pd.DataFrame({""y"":y,""x1"":x1,""x2"":x2,""x3"":x3})
+train,test=train_test_split(d,test_size=.3,random_state=2026)
+
+from sklearn.linear_model import ElasticNetCV
+fit=ElasticNetCV(l1_ratio=.5,cv=5,random_state=2026,max_iter=5000).fit(
+    train[[""x1"",""x2"",""x3""]],train.y)
+print(""Alpha:"",fit.alpha_,""coefficients:"",fit.coef_)
+","Selected penalty and coefficient shrinkage.","The R glmnet and sklearn penalty parameterizations are not numerically identical.","comparable penalties, different lambda/alpha conventions"
+"AA65","Support Vector Machine (SVM)","300 simulated patient records with three predictors and a binary classification outcome; 70/30 split.","Learn a nonlinear decision boundary with a support-vector machine.","e1071","numpy, pandas, scikit-learn","set.seed(2026)
+n <- 300
+x1 <- rnorm(n); x2 <- rnorm(n); x3 <- rnorm(n)
+p <- plogis(-.2 + 1.2*x1 - .8*x2 + .5*x3)
+y <- factor(rbinom(n,1,p),levels=c(0,1),labels=c(""No"",""Yes""))
+d <- data.frame(x1,x2,x3,y)
+idx <- sample(seq_len(n), size=round(.7*n))
+train <- d[idx,]; test <- d[-idx,]
+
+fit<-e1071::svm(y~x1+x2+x3,data=train,kernel=""radial"",cost=1)
+p<-predict(fit,test)
+print(table(truth=test$y,predicted=p))
+","import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+rng = np.random.default_rng(2026)
+n = 300
+x1=rng.normal(size=n); x2=rng.normal(size=n); x3=rng.normal(size=n)
+p=1/(1+np.exp(-(-.2+1.2*x1-.8*x2+.5*x3)))
+y=rng.binomial(1,p)
+d=pd.DataFrame({""x1"":x1,""x2"":x2,""x3"":x3,""y"":y})
+train,test=train_test_split(d, test_size=.3, random_state=2026, stratify=d.y)
+
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+fit=SVC(kernel=""rbf"",C=1,random_state=2026).fit(train[[""x1"",""x2"",""x3""]],train.y)
+print(""Test accuracy:"",accuracy_score(test.y,fit.predict(test[[""x1"",""x2"",""x3""]])))
+","Test accuracy/confusion and sensitivity to hyperparameters.","Scale predictors and tune C/gamma before deployment; outputs are not calibrated probabilities.","comparable"
+"AA66","k-Nearest Neighbors (kNN)","300 simulated patient records with three predictors and a binary classification outcome; 70/30 split.","Classify a new record using nearby training observations.","class","numpy, pandas, scikit-learn","set.seed(2026)
+n <- 300
+x1 <- rnorm(n); x2 <- rnorm(n); x3 <- rnorm(n)
+p <- plogis(-.2 + 1.2*x1 - .8*x2 + .5*x3)
+y <- factor(rbinom(n,1,p),levels=c(0,1),labels=c(""No"",""Yes""))
+d <- data.frame(x1,x2,x3,y)
+idx <- sample(seq_len(n), size=round(.7*n))
+train <- d[idx,]; test <- d[-idx,]
+
+cols<-c(""x1"",""x2"",""x3"")
+mu<-colMeans(train[,cols]); s<-apply(train[,cols],2,sd)
+Xt<-scale(train[,cols],center=mu,scale=s)
+Xv<-scale(test[,cols],center=mu,scale=s)
+p<-class::knn(train=Xt,test=Xv,cl=train$y,k=7)
+print(table(truth=test$y,predicted=p))
+","import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+rng = np.random.default_rng(2026)
+n = 300
+x1=rng.normal(size=n); x2=rng.normal(size=n); x3=rng.normal(size=n)
+p=1/(1+np.exp(-(-.2+1.2*x1-.8*x2+.5*x3)))
+y=rng.binomial(1,p)
+d=pd.DataFrame({""x1"":x1,""x2"":x2,""x3"":x3,""y"":y})
+train,test=train_test_split(d, test_size=.3, random_state=2026, stratify=d.y)
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score
+cols=[""x1"",""x2"",""x3""]
+fit=make_pipeline(StandardScaler(),KNeighborsClassifier(n_neighbors=7)).fit(train[cols],train.y)
+print(""Test accuracy:"",accuracy_score(test.y,fit.predict(test[cols])))
+","Holdout classification accuracy and class counts.","Distance metric and feature scaling strongly affect results.","comparable"
+"AA67","Naive Bayes","300 simulated patient records with three predictors and a binary classification outcome; 70/30 split.","Use a conditional-independence classification baseline.","e1071","numpy, pandas, scikit-learn","set.seed(2026)
+n <- 300
+x1 <- rnorm(n); x2 <- rnorm(n); x3 <- rnorm(n)
+p <- plogis(-.2 + 1.2*x1 - .8*x2 + .5*x3)
+y <- factor(rbinom(n,1,p),levels=c(0,1),labels=c(""No"",""Yes""))
+d <- data.frame(x1,x2,x3,y)
+idx <- sample(seq_len(n), size=round(.7*n))
+train <- d[idx,]; test <- d[-idx,]
+
+fit<-e1071::naiveBayes(y~x1+x2+x3,data=train)
+p<-predict(fit,test)
+print(table(truth=test$y,predicted=p))
+","import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+rng = np.random.default_rng(2026)
+n = 300
+x1=rng.normal(size=n); x2=rng.normal(size=n); x3=rng.normal(size=n)
+p=1/(1+np.exp(-(-.2+1.2*x1-.8*x2+.5*x3)))
+y=rng.binomial(1,p)
+d=pd.DataFrame({""x1"":x1,""x2"":x2,""x3"":x3,""y"":y})
+train,test=train_test_split(d, test_size=.3, random_state=2026, stratify=d.y)
+
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import confusion_matrix
+cols=[""x1"",""x2"",""x3""]
+fit=GaussianNB().fit(train[cols],train.y)
+print(confusion_matrix(test.y,fit.predict(test[cols])))
+","Holdout confusion matrix.","Conditional independence is usually approximate; poor calibration is possible.","comparable"
+"AA68","Artificial Neural Network","300 simulated patient records with three predictors and a binary classification outcome; 70/30 split.","Classify binary outcomes using a small feed-forward neural network.","nnet","numpy, pandas, scikit-learn","set.seed(2026)
+n <- 300
+x1 <- rnorm(n); x2 <- rnorm(n); x3 <- rnorm(n)
+p <- plogis(-.2 + 1.2*x1 - .8*x2 + .5*x3)
+y <- factor(rbinom(n,1,p),levels=c(0,1),labels=c(""No"",""Yes""))
+d <- data.frame(x1,x2,x3,y)
+idx <- sample(seq_len(n), size=round(.7*n))
+train <- d[idx,]; test <- d[-idx,]
+
+fit<-nnet::nnet(y~x1+x2+x3,data=train,size=4,decay=.01,
+                maxit=300,trace=FALSE)
+p<-predict(fit,test,type=""class"")
+print(table(truth=test$y,predicted=p))
+","import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+rng = np.random.default_rng(2026)
+n = 300
+x1=rng.normal(size=n); x2=rng.normal(size=n); x3=rng.normal(size=n)
+p=1/(1+np.exp(-(-.2+1.2*x1-.8*x2+.5*x3)))
+y=rng.binomial(1,p)
+d=pd.DataFrame({""x1"":x1,""x2"":x2,""x3"":x3,""y"":y})
+train,test=train_test_split(d, test_size=.3, random_state=2026, stratify=d.y)
+
+from sklearn.neural_network import MLPClassifier
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score
+cols=[""x1"",""x2"",""x3""]
+fit=make_pipeline(StandardScaler(),MLPClassifier(hidden_layer_sizes=(4,),
+                 max_iter=1000,random_state=2026,early_stopping=True)).fit(train[cols],train.y)
+print(""Test accuracy:"",accuracy_score(test.y,fit.predict(test[cols])))
+","Holdout accuracy and convergence diagnostics.","Training is stochastic and sensitive to scaling, early stopping and model capacity.","comparable"
+"AA69","K-Means Clustering","180 unlabeled observations from three well-separated feature clusters.","Partition unlabeled cases into three compact clusters.","stats","numpy, scikit-learn","set.seed(2026)
+X <- rbind(matrix(rnorm(120, mean=-2, sd=.5), ncol=2),
+           matrix(rnorm(120, mean=2, sd=.5), ncol=2),
+           cbind(rnorm(60,mean=2,sd=.5),rnorm(60,mean=-2,sd=.5)))
+colnames(X)<-c(""feature1"",""feature2"")
+
+fit<-kmeans(scale(X),centers=3,nstart=20)
+print(table(fit$cluster))
+print(fit$tot.withinss)
+","import numpy as np
+rng=np.random.default_rng(2026)
+X=np.vstack([rng.normal(-2,.5,(60,2)),rng.normal(2,.5,(60,2)),
+             np.column_stack([rng.normal(2,.5,60),rng.normal(-2,.5,60)])])
+
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+fit=KMeans(n_clusters=3,n_init=20,random_state=2026).fit(StandardScaler().fit_transform(X))
+print(""Cluster sizes:"",np.bincount(fit.labels_))
+print(""Inertia:"",fit.inertia_)
+","Cluster sizes, within-cluster sum of squares.","Number of clusters is specified, not inferred; no inherent p-value.","comparable"
+"AA70","Hierarchical Clustering","180 unlabeled observations from three well-separated feature clusters.","Create a hierarchy of clusters and cut at a specified level.","stats","numpy, scipy, scikit-learn","set.seed(2026)
+X <- rbind(matrix(rnorm(120, mean=-2, sd=.5), ncol=2),
+           matrix(rnorm(120, mean=2, sd=.5), ncol=2),
+           cbind(rnorm(60,mean=2,sd=.5),rnorm(60,mean=-2,sd=.5)))
+colnames(X)<-c(""feature1"",""feature2"")
+
+h<-hclust(dist(scale(X)),method=""ward.D2"")
+print(table(cutree(h,k=3)))
+","import numpy as np
+rng=np.random.default_rng(2026)
+X=np.vstack([rng.normal(-2,.5,(60,2)),rng.normal(2,.5,(60,2)),
+             np.column_stack([rng.normal(2,.5,60),rng.normal(-2,.5,60)])])
+
+from scipy.cluster.hierarchy import linkage,fcluster
+from sklearn.preprocessing import StandardScaler
+Z=linkage(StandardScaler().fit_transform(X),method=""ward"")
+print(""Cluster sizes:"",np.bincount(fcluster(Z,3,criterion=""maxclust""))[1:])
+","Ward linkage merge tree and three-group partition.","Linkage and scaling affect results; dendrogram proximity is not statistical significance.","comparable"
+"AA71","DBSCAN","180 unlabeled observations from three well-separated feature clusters.","Detect density-connected clusters and possible noise points.","dbscan","numpy, scipy, scikit-learn","set.seed(2026)
+X <- rbind(matrix(rnorm(120, mean=-2, sd=.5), ncol=2),
+           matrix(rnorm(120, mean=2, sd=.5), ncol=2),
+           cbind(rnorm(60,mean=2,sd=.5),rnorm(60,mean=-2,sd=.5)))
+colnames(X)<-c(""feature1"",""feature2"")
+
+fit<-dbscan::dbscan(scale(X),eps=.5,minPts=5)
+print(table(fit$cluster)) # 0 denotes noise
+","import numpy as np
+rng=np.random.default_rng(2026)
+X=np.vstack([rng.normal(-2,.5,(60,2)),rng.normal(2,.5,(60,2)),
+             np.column_stack([rng.normal(2,.5,60),rng.normal(-2,.5,60)])])
+
+from sklearn.cluster import DBSCAN
+from sklearn.preprocessing import StandardScaler
+fit=DBSCAN(eps=.5,min_samples=5).fit(StandardScaler().fit_transform(X))
+print(""Labels (-1 noise):"",np.unique(fit.labels_,return_counts=True))
+","Cluster labels and number of unassigned/noise points.","Distance scale, epsilon and minimum-neighbor settings govern results.","comparable"
+"AA72","Isolation Forest","180 unlabeled observations from three well-separated feature clusters.","Assign anomaly scores by random tree isolation.","isotree","numpy, scikit-learn","set.seed(2026)
+X <- rbind(matrix(rnorm(120, mean=-2, sd=.5), ncol=2),
+           matrix(rnorm(120, mean=2, sd=.5), ncol=2),
+           cbind(rnorm(60,mean=2,sd=.5),rnorm(60,mean=-2,sd=.5)))
+colnames(X)<-c(""feature1"",""feature2"")
+
+fit<-isotree::isolation.forest(as.data.frame(X),ntrees=150,seed=2026)
+score<-predict(fit,as.data.frame(X),type=""score"")
+print(head(sort(score,decreasing=TRUE),10))
+","import numpy as np
+rng=np.random.default_rng(2026)
+X=np.vstack([rng.normal(-2,.5,(60,2)),rng.normal(2,.5,(60,2)),
+             np.column_stack([rng.normal(2,.5,60),rng.normal(-2,.5,60)])])
+
+from sklearn.ensemble import IsolationForest
+fit=IsolationForest(n_estimators=150,random_state=2026,contamination=.05).fit(X)
+score=-fit.score_samples(X) # larger scores mean more anomalous
+print(""Most anomalous indices:"",np.argsort(score)[-10:][::-1])
+","Highest-scoring unusual records; inspect rather than automatically delete.","Scoring conventions differ by library; anomalies are not necessarily data errors.","comparable isolation-forest families, different score conventions"
+"AA73","Distributed Lag Non-Linear Model (DLNM)","180 consecutive monthly observations with trend, seasonality and serial dependence.","Demonstrate a nonlinear temperature association distributed over several lags.","dlnm","numpy, pandas, patsy, statsmodels","set.seed(2026)
+n<-180
+t<-seq_len(n)
+y<-20 + .04*t + 2*sin(2*pi*t/12) + as.numeric(arima.sim(list(ar=.5),n=n,sd=1.5))
+d<-data.frame(t,y)
+
+set.seed(2027)
+n<-nrow(d)
+temp<-20+8*sin(2*pi*d$t/30)+rnorm(n,sd=2)
+lag1<-c(NA,temp[-n])
+d$y<-5+.08*(temp-20)^2+.05*(lag1-20)^2+rnorm(n)
+cb<-dlnm::crossbasis(temp,lag=3,
+       argvar=list(fun=""bs"",df=4),arglag=list(fun=""ns"",df=3))
+fit<-glm(d$y~cb+d$t,family=gaussian())
+print(summary(fit)$coefficients)
+","import numpy as np
+import pandas as pd
+rng=np.random.default_rng(2026)
+n=180
+t=np.arange(1,n+1)
+eps=rng.normal(0,1.5,n)
+noise=np.zeros(n)
+for j in range(1,n): noise[j]=.5*noise[j-1]+eps[j]
+y=20+.04*t+2*np.sin(2*np.pi*t/12)+noise
+d=pd.DataFrame({""t"":t,""y"":y})
+
+# Python approximation: exposure spline by individual lag, not exact dlnm crossbasis
+from patsy import dmatrix
+import statsmodels.api as sm
+n=len(d)
+temp=20+8*np.sin(2*np.pi*d.t.to_numpy()/30)+rng.normal(0,2,n)
+lag1=np.r_[np.nan,temp[:-1]]
+y=5+.08*(temp-20)**2+.05*(lag1-20)**2+rng.normal(size=n)
+L=np.column_stack([np.roll(temp,j) for j in range(4)])[3:]
+B=dmatrix(""bs(z, df=4, degree=3, include_intercept=False) - 1"",
+          {""z"":L.ravel()},return_type=""dataframe"").to_numpy()
+features=B.reshape(len(L),4,4).reshape(len(L),16)
+X=sm.add_constant(np.column_stack([features,d.t.to_numpy()[3:]]))
+fit=sm.OLS(y[3:],X).fit()
+print(""Spline model R-squared:"",fit.rsquared)
+","Lagged exposure-basis effects and model fit; in R, inspect cross-predictions in subsequent work.","Python example uses separate lag splines, NOT a smooth lag-axis crossbasis; neither example implements a full confounding-adjusted epidemiological DLNM.","analog: Python lag-spline approximation, not a direct DLNM equivalent"
