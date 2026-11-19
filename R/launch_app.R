@@ -6,6 +6,8 @@
 #' @export
 launch_app <- function() {
 
+  register_method_guides()
+
   # Generate input controls from our questionnaire dataset
 
   make_question <- function(id, current = NULL) {
@@ -310,6 +312,13 @@ launch_app <- function() {
             shiny::p(r$primary$description[1]),
 
             shiny::p(
+              method_guide_link(
+                r$primary$method_id[1],
+                "View Method Guide"
+              )
+            ),
+
+            shiny::p(
               shiny::strong("When to use: "),
               r$primary$when_to_use[1]
             ),
@@ -361,6 +370,13 @@ launch_app <- function() {
 
                   paste0(
                     " (", r$alternatives$status[i], ")"
+                  ),
+
+                  shiny::p(
+                    method_guide_link(
+                      r$alternatives$method_id[1],
+                      "View Method Guide"
+                    )
                   ),
 
                   shiny::p(

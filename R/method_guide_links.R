@@ -145,7 +145,7 @@ create_method_report_bundle <- function(answers,
   relative_files <- c("AdamsAnalysis_Report.html",
                       file.path("method-guides", needed))
   zip::zipr(zipfile = file, files = relative_files, root = stage,
-            include_directories = FALSE)
+            include_directories = FALSE, mode = "mirror")
   if (!file.exists(file)) stop("The report ZIP could not be created.",
                                call. = FALSE)
   invisible(file)
